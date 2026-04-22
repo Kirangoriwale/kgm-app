@@ -1,0 +1,33 @@
+@model KgmApp.Models.Meeting
+@{
+    ViewData["Title"] = "Delete Meeting";
+    ViewData["PageTitle"] = "Delete Meeting";
+    ViewData["BreadcrumbCurrent"] = "Delete Meeting";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+        <h1 class="h3 text-danger mb-2">Delete Meeting</h1>
+        <p class="text-muted mb-4">This will also delete all saved attendance marks for this meeting.</p>
+
+        <div class="card border-danger border-opacity-50 shadow-sm mb-4 rounded-3">
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Meeting Date</dt>
+                    <dd class="col-sm-8">@Model.MeetingDate.ToString("dd-MMM-yyyy")</dd>
+                    <dt class="col-sm-4">Title</dt>
+                    <dd class="col-sm-8">@Model.Title</dd>
+                    <dt class="col-sm-4">Location</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.Location) ? "-" : Model.Location)</dd>
+                </dl>
+            </div>
+        </div>
+
+        <form asp-action="Delete" method="post" class="d-flex flex-column flex-sm-row gap-2">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Delete Meeting</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+        </form>
+    </div>
+</div>
+

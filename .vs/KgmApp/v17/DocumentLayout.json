@@ -1,0 +1,41 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\KIran_Project\\Bakup-Copy\\KgmApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F476B749-9FE3-46A4-B207-A06172BB84A9}|KgmApp\\KgmApp.csproj|d:\\kiran_project\\bakup-copy\\kgmapp\\kgmapp\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{F476B749-9FE3-46A4-B207-A06172BB84A9}|KgmApp\\KgmApp.csproj|solutionrelative:kgmapp\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 311,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\appsettings.json",
+              "RelativeDocumentMoniker": "KgmApp\\appsettings.json",
+              "ToolTip": "D:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\appsettings.json",
+              "RelativeToolTip": "KgmApp\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-11T10:14:22.164Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

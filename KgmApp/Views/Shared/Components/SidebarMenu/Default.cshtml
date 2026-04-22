@@ -1,0 +1,235 @@
+@model KgmApp.Models.SidebarMenuViewModel
+@{
+    var m = Model;
+    var cc = m.CurrentController;
+    var ca = m.CurrentAction;
+}
+
+<ul class="nav flex-column gap-1">
+    @if (m.Can(MenuKeys.HomeDashboard))
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(m.IsDashboardActive ? "active" : "")"
+               asp-controller="Home" asp-action="@m.DashboardAction">
+                <i class="bi bi-speedometer2 sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">Mandal Dashboard</span>
+            </a>
+        </li>
+    }
+    @if (m.Can(MenuKeys.MyDashboard))
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(m.IsMyDashboardActive ? "active" : "")"
+               asp-controller="Home" asp-action="MyDashboard">
+                <i class="bi bi-person-vcard sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">My Dashboard</span>
+            </a>
+        </li>
+    }
+    @if (m.Can(MenuKeys.AboutUs))
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Home" && ca == "AboutUs" ? "active" : "")"
+               asp-controller="Home" asp-action="AboutUs">
+                <i class="bi bi-info-circle sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">About Us</span>
+            </a>
+        </li>
+    }
+    @if (m.Can(MenuKeys.CommitteeMembers))
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Home" && ca == "CommitteeMembers" ? "active" : "")"
+               asp-controller="Home" asp-action="CommitteeMembers">
+                <i class="bi bi-people sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">Committee Members</span>
+            </a>
+        </li>
+    }
+    @if (m.Can(MenuKeys.Members))
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Member" || cc == "SubMembers" ? "active" : "")"
+               asp-controller="Member" asp-action="Index">
+                <i class="bi bi-person-lines-fill sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">Members</span>
+            </a>
+        </li>
+    }
+    @if (m.Can(MenuKeys.Transactions))
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Transaction" ? "active" : "")"
+               asp-controller="Transaction" asp-action="Index">
+                <i class="bi bi-cash-stack sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">Transactions</span>
+            </a>
+        </li>
+    }
+    @if (m.Can(MenuKeys.Meetings))
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Meeting" ? "active" : "")"
+               asp-controller="Meeting" asp-action="Index">
+                <i class="bi bi-calendar-check sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">Meetings</span>
+            </a>
+        </li>
+    }
+    @if (m.Can(MenuKeys.Announcements))
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Announcement" ? "active" : "")"
+               asp-controller="Announcement" asp-action="Index">
+                <i class="bi bi-megaphone sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">Announcements</span>
+            </a>
+        </li>
+    }
+    @if (m.Can(MenuKeys.Suggestions))
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Suggestion" ? "active" : "")"
+               asp-controller="Suggestion" asp-action="Index">
+                <i class="bi bi-chat-dots sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">Suggestions</span>
+            </a>
+        </li>
+    }
+    @if (m.ShowReportsSection)
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(m.IsReportsOpen ? "active" : "")"
+               data-bs-toggle="collapse"
+               href="#reportsMenu"
+               role="button"
+               aria-expanded="@(m.IsReportsOpen ? "true" : "false")"
+               aria-controls="reportsMenu">
+                <i class="bi bi-file-earmark-text sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">Reports</span>
+            </a>
+            <div class="collapse @(m.IsReportsOpen ? "show" : "")" id="reportsMenu">
+                <ul class="nav flex-column ms-4 mt-1">
+                    @if (m.Can(MenuKeys.ReportContribution))
+                    {
+                        <li class="nav-item">
+                            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Report" && ca == "ContributionReport" ? "active" : "")"
+                               asp-controller="Report" asp-action="ContributionReport">
+                                <i class="bi bi-file-earmark-spreadsheet sidebar-link-icon" aria-hidden="true"></i>
+                                <span class="sidebar-label">Contribution Report</span>
+                            </a>
+                        </li>
+                    }
+                    @if (m.Can(MenuKeys.ReportStatement))
+                    {
+                        <li class="nav-item">
+                            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Report" && (ca == "Statement" || ca == "StatementPdf") ? "active" : "")"
+                               asp-controller="Report" asp-action="Statement">
+                                <i class="bi bi-journal-text sidebar-link-icon" aria-hidden="true"></i>
+                                <span class="sidebar-label">Statement</span>
+                            </a>
+                        </li>
+                    }
+                    @if (m.Can(MenuKeys.ReportAttendance))
+                    {
+                        <li class="nav-item">
+                            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Report" && ca == "AttendanceReport" ? "active" : "")"
+                               asp-controller="Report" asp-action="AttendanceReport">
+                                <i class="bi bi-clipboard-check sidebar-link-icon" aria-hidden="true"></i>
+                                <span class="sidebar-label">Attendance Report</span>
+                            </a>
+                        </li>
+                    }
+                    @if (m.Can(MenuKeys.ReportCommitteeAttendance))
+                    {
+                        <li class="nav-item">
+                            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Report" && ca == "CommitteeAttendanceReport" ? "active" : "")"
+                               asp-controller="Report" asp-action="CommitteeAttendanceReport">
+                                <i class="bi bi-people sidebar-link-icon" aria-hidden="true"></i>
+                                <span class="sidebar-label">Committee Attendance</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </li>
+    }
+    @if (m.ShowSettingsSection)
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(m.IsSettingsOpen ? "active" : "")"
+               data-bs-toggle="collapse"
+               href="#settingsMenu"
+               role="button"
+               aria-expanded="@(m.IsSettingsOpen ? "true" : "false")"
+               aria-controls="settingsMenu">
+                <i class="bi bi-gear sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">Settings</span>
+            </a>
+            <div class="collapse @(m.IsSettingsOpen ? "show" : "")" id="settingsMenu">
+                <ul class="nav flex-column ms-4 mt-1">
+                    @if (m.Can(MenuKeys.SettingsUser))
+                    {
+                        <li class="nav-item">
+                            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "User" ? "active" : "")"
+                               asp-controller="User" asp-action="Index">
+                                <i class="bi bi-person-gear sidebar-link-icon" aria-hidden="true"></i>
+                                <span class="sidebar-label">User</span>
+                            </a>
+                        </li>
+                    }
+                    @if (m.Can(MenuKeys.SettingsFees))
+                    {
+                        <li class="nav-item">
+                            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "FeeSetting" ? "active" : "")"
+                               asp-controller="FeeSetting" asp-action="Index">
+                                <i class="bi bi-currency-rupee sidebar-link-icon" aria-hidden="true"></i>
+                                <span class="sidebar-label">Fees</span>
+                            </a>
+                        </li>
+                    }
+                    @if (m.Can(MenuKeys.SettingsChangePassword))
+                    {
+                        <li class="nav-item">
+                            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Account" && ca == "SettingsChangePassword" ? "active" : "")"
+                               asp-controller="Account" asp-action="SettingsChangePassword">
+                                <i class="bi bi-key sidebar-link-icon" aria-hidden="true"></i>
+                                <span class="sidebar-label">Change Password</span>
+                            </a>
+                        </li>
+                    }
+                    @if (m.Can(MenuKeys.SettingsLoginLogs))
+                    {
+                        <li class="nav-item">
+                            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "LoginLogs" ? "active" : "")"
+                               asp-controller="LoginLogs" asp-action="Index">
+                                <i class="bi bi-clock-history sidebar-link-icon" aria-hidden="true"></i>
+                                <span class="sidebar-label">Login Logs</span>
+                            </a>
+                        </li>
+                    }
+                    @if (m.Can(MenuKeys.SettingsRulesRegulations))
+                    {
+                        <li class="nav-item">
+                            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "RulesRegulations" ? "active" : "")"
+                               asp-controller="RulesRegulations" asp-action="Index">
+                                <i class="bi bi-journal-richtext sidebar-link-icon" aria-hidden="true"></i>
+                                <span class="sidebar-label">Rules &amp; Regulations</span>
+                            </a>
+                        </li>
+                    }
+                    @if (m.Can(MenuKeys.SettingsUserRights))
+                    {
+                        <li class="nav-item">
+                            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "UserRights" ? "active" : "")"
+                               asp-controller="UserRights" asp-action="Index">
+                                <i class="bi bi-shield-lock sidebar-link-icon" aria-hidden="true"></i>
+                                <span class="sidebar-label">User Rights</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </li>
+    }
+</ul>

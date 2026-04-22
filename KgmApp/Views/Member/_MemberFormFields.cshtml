@@ -1,0 +1,81 @@
+@model KgmApp.Models.Member
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+<div class="mb-3">
+    <label asp-for="Sr" class="form-label"></label>
+    <input asp-for="Sr" class="form-control" inputmode="numeric" />
+    <span asp-validation-for="Sr" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control" autocomplete="name" />
+    <span asp-validation-for="Name" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="MobileNo" class="form-label"></label>
+    <input asp-for="MobileNo" class="form-control" inputmode="numeric" autocomplete="tel" maxlength="10" pattern="\d{10}" title="10-digit mobile number" />
+    <span asp-validation-for="MobileNo" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="EmailId" class="form-label"></label>
+    <input asp-for="EmailId" class="form-control" inputmode="email" autocomplete="email" />
+    <span asp-validation-for="EmailId" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Address" class="form-label"></label>
+    <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+    <span asp-validation-for="Address" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Designation" class="form-label"></label>
+    <input asp-for="Designation" class="form-control" />
+    <span asp-validation-for="Designation" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="LoginPassword" class="form-label"></label>
+    <input asp-for="LoginPassword" class="form-control" />
+    <span asp-validation-for="LoginPassword" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Role" class="form-label"></label>
+    <select asp-for="Role" asp-items="ViewBag.MemberRoles" class="form-select"></select>
+    <span asp-validation-for="Role" class="text-danger small"></span>
+    <div class="form-text">
+        Admin: full access | Treasurer: finance only | Secretary: meetings/attendance |
+        Committee: view only | Member: own data only.
+    </div>
+</div>
+
+<div class="form-check form-switch mb-2">
+    <input asp-for="IsActive" class="form-check-input" role="switch" />
+    <label asp-for="IsActive" class="form-check-label"></label>
+</div>
+
+<div class="form-check form-switch mb-0">
+    <input asp-for="IsRegistrationFormSubmitted" class="form-check-input" role="switch" />
+    <label asp-for="IsRegistrationFormSubmitted" class="form-check-label"></label>
+</div>
+
+<div class="form-check form-switch mt-2">
+    <input asp-for="IsCommiteeMember" class="form-check-input" role="switch" />
+    <label asp-for="IsCommiteeMember" class="form-check-label"></label>
+</div>
+
+<div class="form-check form-switch mt-2">
+    <input asp-for="RestrictLogin" class="form-check-input" role="switch" />
+    <label asp-for="RestrictLogin" class="form-check-label"></label>
+</div>
+
+<div class="form-check form-switch mt-2">
+    <input asp-for="IsFirstLogin" class="form-check-input" role="switch" />
+    <label asp-for="IsFirstLogin" class="form-check-label"></label>
+    <div class="form-text">When on, the member must change password after signing in.</div>
+</div>

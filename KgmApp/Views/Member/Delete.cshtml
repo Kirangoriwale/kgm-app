@@ -1,0 +1,49 @@
+@model KgmApp.Models.Member
+@{
+    ViewData["Title"] = "Delete member";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-action="Index">Members</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Delete</li>
+            </ol>
+        </nav>
+
+        <h1 class="h3 text-danger mb-2">Delete member</h1>
+        <p class="text-muted mb-4">This cannot be undone. Related sub-members will also be removed.</p>
+
+        <div class="card border-danger border-opacity-50 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Sr.</dt>
+                    <dd class="col-sm-8">@Model.Sr</dd>
+                    <dt class="col-sm-4">Name</dt>
+                    <dd class="col-sm-8">@Model.Name</dd>
+                    <dt class="col-sm-4">Mobile No</dt>
+                    <dd class="col-sm-8">@Model.MobileNo</dd>
+                    <dt class="col-sm-4">Email ID</dt>
+                    <dd class="col-sm-8 text-break">@Model.EmailId</dd>
+                    <dt class="col-sm-4">Address</dt>
+                    <dd class="col-sm-8 text-break">@Model.Address</dd>
+                    <dt class="col-sm-4">Is Commitee Member</dt>
+                    <dd class="col-sm-8">@(Model.IsCommiteeMember ? "Yes" : "No")</dd>
+                    <dt class="col-sm-4">Login Password</dt>
+                    <dd class="col-sm-8 text-break">@Model.LoginPassword</dd>
+                    <dt class="col-sm-4">Role</dt>
+                    <dd class="col-sm-8">@Model.Role</dd>
+                    <dt class="col-sm-4">Restrict Login</dt>
+                    <dd class="col-sm-8">@(Model.RestrictLogin ? "Yes" : "No")</dd>
+                </dl>
+            </div>
+        </div>
+
+        <form asp-action="Delete" method="post" class="d-flex flex-column flex-sm-row gap-2">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+        </form>
+    </div>
+</div>

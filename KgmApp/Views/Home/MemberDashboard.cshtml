@@ -1,0 +1,161 @@
+@model KgmApp.Models.MemberDashboardViewModel
+@{
+    ViewData["Title"] = "My dashboard";
+    ViewData["PageTitle"] = "Dashboard";
+    ViewData["BreadcrumbCurrent"] = "Dashboard";
+}
+
+<div class="member-dashboard-welcome card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-body p-4">
+        <h1 class="h4 mb-2 text-dark">Welcome, @Model.MemberName</h1>
+        <p class="text-muted mb-0">Here is a summary of your contribution and registration payments.</p>
+    </div>
+</div>
+
+<div class="row g-3 g-lg-4">
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="card dashboard-stat-card dashboard-stat-card--member-paid member-dashboard-stat-card shadow-sm rounded-3 h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="dashboard-stat-icon rounded-3 member-dashboard-stat-icon" aria-hidden="true">
+                    <i class="bi bi-check-circle fs-3"></i>
+                </div>
+                <div class="min-w-0 flex-grow-1">
+                    <div class="small text-uppercase fw-bold text-dark member-dashboard-stat-label">Total paid</div>
+                    <div class="h3 fw-semibold lh-1 my-1">
+                        <a asp-action="MemberPaidDetails" class="member-dashboard-amount-link text-dark text-decoration-none">₹ @Model.TotalPaid.ToString("N2")</a>
+                    </div>
+                    <div class="small text-muted member-dashboard-stat-hint">Tap amount to see payment lines.</div>
+                    <p class="small text-muted member-dashboard-stat-footnote mb-0 mt-2">Half-yearly contributions and registration fees</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="card dashboard-stat-card dashboard-stat-card--member-pending member-dashboard-stat-card shadow-sm rounded-3 h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="dashboard-stat-icon rounded-3 member-dashboard-stat-icon" aria-hidden="true">
+                    <i class="bi bi-hourglass-split fs-3"></i>
+                </div>
+                <div class="min-w-0 flex-grow-1">
+                    <div class="small text-uppercase fw-bold text-dark member-dashboard-stat-label">Amount pending</div>
+                    <div class="h3 fw-semibold lh-1 my-1">
+                        <a asp-action="MemberPendingDetails" class="member-dashboard-amount-link text-dark text-decoration-none">₹ @Model.TotalPending.ToString("N2")</a>
+                    </div>
+                    <div class="small text-muted member-dashboard-stat-hint">Tap amount to see how pending is calculated.</div>
+                    @if (Model.TotalPending > 0)
+                    {
+                        <div class="mt-3 pt-3 border-top member-dashboard-stat-divider d-flex flex-column align-items-stretch align-items-md-start gap-2">
+                            @if (!string.IsNullOrEmpty(Model.UpiPayPendingHref))
+                            {
+                                <a href="@Model.UpiPayPendingHref" class="btn btn-danger btn-sm rounded-pill px-3 align-self-start">
+                                    <i class="bi bi-phone me-1" aria-hidden="true"></i> Pay now (UPI)
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="btn btn-danger btn-sm rounded-pill px-3 align-self-start disabled opacity-75" tabindex="-1" role="button" aria-disabled="true">
+                                    <i class="bi bi-phone me-1" aria-hidden="true"></i> Pay now (UPI)
+                                </span>
+                                <span class="small text-muted member-dashboard-stat-footnote">UPI is not set up yet: add <code class="member-dashboard-stat-code">MemberUpiPayment:PayeeVpa</code> in appsettings or <code class="member-dashboard-stat-code">MemberUpiPayment__PayeeVpa</code> as env var, then restart.</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="card dashboard-stat-card dashboard-stat-card--member-attendance member-dashboard-stat-card shadow-sm rounded-3 h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="dashboard-stat-icon rounded-3 member-dashboard-stat-icon" aria-hidden="true">
+                    <i class="bi bi-calendar-check fs-3"></i>
+                </div>
+                <div class="min-w-0 flex-grow-1">
+                    <div class="small text-uppercase fw-bold text-dark member-dashboard-stat-label">Attendance summary</div>
+                    <div class="h3 fw-semibold lh-1 my-1">
+                        <a asp-action="MemberGeneralMeetingAttendance" class="member-dashboard-amount-link text-dark text-decoration-none" aria-label="Open general meeting attendance list">@Model.GeneralMeetingsPresentCount<span class="text-muted fw-normal"> / </span>@Model.GeneralMeetingsTotalCount</a>
+                    </div>
+                    <div class="small text-muted member-dashboard-stat-hint">Present / total meetings · tap counts for list</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-3">
+        <div class="card dashboard-stat-card dashboard-stat-card--member-upcoming member-dashboard-stat-card shadow-sm rounded-3 h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="dashboard-stat-icon rounded-3 member-dashboard-stat-icon" aria-hidden="true">
+                    <i class="bi bi-calendar-event fs-3"></i>
+                </div>
+                <div class="min-w-0 flex-grow-1">
+                    <div class="small text-uppercase fw-bold text-dark member-dashboard-stat-label">Upcoming meeting</div>
+                    @if (Model.HasUpcomingGeneralMeeting && Model.UpcomingGeneralMeetingDate.HasValue)
+                    {
+                        <div class="h4 fw-semibold lh-sm my-1 text-dark">@Model.UpcomingGeneralMeetingDate.Value.ToString("dd MMM yyyy")</div>
+                        <div class="small text-dark mt-1">
+                            <span class="text-muted me-1"><i class="bi bi-geo-alt" aria-hidden="true"></i></span>@Model.UpcomingGeneralMeetingLocation
+                        </div>
+                        <p class="small text-muted member-dashboard-stat-footnote mb-0 mt-2">@Model.UpcomingGeneralMeetingTitle · earliest general meeting after today.</p>
+                    }
+                    else
+                    {
+                        <p class="small text-muted member-dashboard-stat-footnote mb-0 mt-2">No general meeting Schedule yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card dashboard-stat-card member-dashboard-stat-card shadow-sm rounded-3 h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="dashboard-stat-icon rounded-3 member-dashboard-stat-icon" aria-hidden="true">
+                        <i class="bi bi-person-badge fs-3"></i>
+                    </div>
+                    <div class="small text-uppercase fw-bold text-dark member-dashboard-stat-label">My info</div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th class="text-nowrap">Registration Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-semibold">@Model.MemberName</td>
+                                <td>
+                                    @if (Model.IsMemberRegistrationSubmitted)
+                                    {
+                                        <span class="badge bg-success">Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">No</span>
+                                    }
+                                </td>
+                            </tr>
+                            @foreach (var subMember in Model.SubMembers)
+                            {
+                                <tr>
+                                    <td>@subMember.Name</td>
+                                    <td>
+                                        @if (subMember.IsRegistrationSubmitted)
+                                        {
+                                            <span class="badge bg-success">Yes</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">No</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

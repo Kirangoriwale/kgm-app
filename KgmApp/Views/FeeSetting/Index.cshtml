@@ -1,0 +1,66 @@
+@model IEnumerable<KgmApp.Models.FeeSetting>
+@{
+    ViewData["Title"] = "Fee Settings";
+    ViewData["PageTitle"] = "Fee Settings";
+    ViewData["BreadcrumbCurrent"] = "Fee Settings";
+}
+
+<div class="page-actions d-flex justify-content-end mb-4">
+    @if (ViewMenu.Can(ViewData, MenuKeys.SettingsFees, "Add"))
+    {
+        <a class="btn btn-primary rounded-3 d-inline-flex align-items-center justify-content-center gap-2" asp-action="Create">
+            <i class="bi bi-plus-circle" aria-hidden="true"></i>
+            Add Fee Setting
+        </a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body text-center py-5 text-muted">
+            <i class="bi bi-inbox display-6 d-block mb-3" aria-hidden="true"></i>
+            No fee settings found. Add at least one record to use dynamic contribution/registration fee.
+        </div>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Apply From Date</th>
+                        <th class="text-end">Contribution Fee</th>
+                        <th class="text-end">Registration Fee</th>
+                        <th class="text-end text-nowrap">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model)
+                {
+                    <tr>
+                        <td>@row.ApplyFromDate.ToString("dd-MMM-yyyy")</td>
+                        <td class="text-end fw-semibold">@row.ContributionFee.ToString("0.00")</td>
+                        <td class="text-end fw-semibold">@row.RegistrationFee.ToString("0.00")</td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1 flex-wrap justify-content-end">
+                                @if (ViewMenu.Can(ViewData, MenuKeys.SettingsFees, "Edit"))
+                                {
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@row.Id">Edit</a>
+                                }
+                                @if (ViewMenu.Can(ViewData, MenuKeys.SettingsFees, "Delete"))
+                                {
+                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@row.Id">Delete</a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+

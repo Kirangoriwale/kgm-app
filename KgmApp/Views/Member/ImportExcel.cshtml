@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Import Members";
+    ViewData["PageTitle"] = "Import Members";
+    ViewData["BreadcrumbCurrent"] = "Import Members";
+}
+
+<div class="d-flex justify-content-end mb-3">
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to Members
+    </a>
+</div>
+
+@if (TempData["ErrorMessage"] is string errorMessage && !string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-warning" role="alert">
+        @errorMessage
+    </div>
+}
+
+@if (TempData["SuccessMessage"] is string successMessage && !string.IsNullOrWhiteSpace(successMessage))
+{
+    <div class="alert alert-success" role="alert">
+        @successMessage
+    </div>
+}
+
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Excel Import (new members only)</h5>
+        <form asp-action="ImportExcel" method="post" enctype="multipart/form-data" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div class="col-12">
+                <label class="form-label">Select Excel file (.xlsx)</label>
+                <input type="file" name="excelFile" class="form-control" accept=".xlsx" required />
+            </div>
+            <div class="col-12">
+                <div class="small text-muted">
+                    <strong>Required columns:</strong> Sr, Name, MobileNo, Address<br />
+                    <strong>All other member fields (optional in the file; included in the template):</strong>
+                    EmailId, Designation, Role, LoginPassword, IsFirstLogin (or FirstLogin),
+                    IsActive (or Active), IsRegistrationFormSubmitted (or RegistrationFormSubmitted),
+                    IsCommiteeMember (or CommiteeMember), RestrictLogin.<br />
+                    Boolean columns accept values like Yes/No, True/False, 1/0. This import <strong>only creates new members</strong>; rows with an Sr or mobile number that already exists are skipped. To change an existing member, use Edit.
+                </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-file-earmark-arrow-up me-1"></i>Import Excel
+                </button>
+                <a asp-action="DownloadImportTemplate" class="btn btn-outline-primary">
+                    <i class="bi bi-download me-1"></i>Download Sample Excel Template
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

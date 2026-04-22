@@ -1,0 +1,107 @@
+@model IEnumerable<KgmApp.Models.Member>
+@{
+    ViewData["Title"] = "Members";
+    ViewData["PageTitle"] = "Members";
+    ViewData["BreadcrumbCurrent"] = "Members";
+    var databaseUnavailable = (ViewData["DatabaseUnavailable"] as bool?) ?? false;
+}
+
+<div class="page-actions d-flex justify-content-end gap-2 mb-4 flex-wrap">
+    @if (ViewMenu.Can(ViewData, MenuKeys.Members, "Add"))
+    {
+        <a class="btn btn-outline-primary rounded-3 d-inline-flex align-items-center justify-content-center gap-2" asp-action="ImportExcel">
+            <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i>
+            Excel Import
+        </a>
+        <a class="btn btn-primary rounded-3 d-inline-flex align-items-center justify-content-center gap-2" asp-action="Create">
+            <i class="bi bi-person-plus" aria-hidden="true"></i>
+            Create Member
+        </a>
+    }
+</div>
+
+@if (databaseUnavailable)
+{
+    <div class="alert alert-warning d-flex align-items-start gap-2" role="alert">
+        <i class="bi bi-exclamation-triangle-fill mt-1" aria-hidden="true"></i>
+        <div>
+            <strong>Database is currently unavailable.</strong>
+            <div class="small mb-0">Please check PostgreSQL/Supabase connection settings and try again.</div>
+        </div>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] is string errorMessage && !string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-warning" role="alert">
+        @errorMessage
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body text-center py-5 text-muted">
+            <i class="bi bi-inbox display-6 d-block mb-3" aria-hidden="true"></i>
+            <p class="mb-0">No members yet. Use <strong>Create Member</strong> to add one.</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="text-end text-nowrap">Sr.</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Mobile No</th>
+                        <th scope="col">Email ID</th>
+                        <th scope="col">Address</th>
+                        <th scope="col" class="text-center text-nowrap">Active</th>
+                        <th scope="col" class="text-end text-nowrap">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="text-end">@Html.DisplayFor(_ => item.Sr)</td>
+                        <td>@Html.DisplayFor(_ => item.Name)</td>
+                        <td>@Html.DisplayFor(_ => item.MobileNo)</td>
+                        <td class="text-break">@Html.DisplayFor(_ => item.EmailId)</td>
+                        <td class="text-break" style="max-width: 14rem;">@Html.DisplayFor(_ => item.Address)</td>
+                        <td class="text-center">
+                            @if (item.IsActive)
+                            {
+                                <span class="badge member-status-badge member-status-yes" style="background-color:#198754;color:#fff;">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge member-status-badge member-status-no" style="background-color:#dc3545;color:#fff;">No</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex flex-wrap justify-content-end gap-1 action-buttons" role="group" aria-label="Member actions">
+                                @if (ViewMenu.Can(ViewData, MenuKeys.Members, "View"))
+                                {
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                }
+                                @if (ViewMenu.Can(ViewData, MenuKeys.Members, "Edit"))
+                                {
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                                }
+                                @if (ViewMenu.Can(ViewData, MenuKeys.Members, "Delete"))
+                                {
+                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

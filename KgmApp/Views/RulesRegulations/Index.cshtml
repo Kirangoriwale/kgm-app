@@ -1,0 +1,80 @@
+@model KgmApp.Models.RulesRegulation
+@{
+    var canEdit = ViewMenu.Can(ViewData, MenuKeys.SettingsRulesRegulations, "Edit");
+    var existingHtml = (Model.ContentHtml ?? string.Empty).Trim();
+    var hasContent = !string.IsNullOrWhiteSpace(existingHtml)
+        && !string.Equals(existingHtml, "<p><br></p>", StringComparison.OrdinalIgnoreCase);
+}
+
+@section Head {
+    <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" />
+}
+
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-3 p-md-4">
+        @if (canEdit)
+        {
+            <form asp-action="Save" method="post" id="rulesRegulationsForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <label asp-for="ContentHtml" class="form-label fw-semibold">Rules and Regulations</label>
+                <div id="rulesEditor" class="meeting-minutes-editor"></div>
+                <textarea asp-for="ContentHtml" class="d-none"></textarea>
+                <span asp-validation-for="ContentHtml" class="text-danger"></span>
+
+                <div class="mt-3 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">Save Rules</button>
+                </div>
+            </form>
+        }
+        else
+        {
+            @if (!hasContent)
+            {
+                <div class="text-muted">Rules and regulations are not added yet.</div>
+            }
+            else
+            {
+                <div class="small text-body">@Html.Raw(existingHtml)</div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @if (canEdit)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+        <script>
+            (function () {
+                const form = document.getElementById('rulesRegulationsForm');
+                const hiddenInput = document.getElementById('ContentHtml');
+                const editorHost = document.getElementById('rulesEditor');
+                if (!form || !hiddenInput || !editorHost || typeof Quill === 'undefined') return;
+
+                const quill = new Quill(editorHost, {
+                    theme: 'snow',
+                    placeholder: 'Paste and edit rules and regulations...',
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline'],
+                            [{ list: 'ordered' }, { list: 'bullet' }],
+                            ['link', 'clean']
+                        ]
+                    }
+                });
+
+                if (hiddenInput.value) {
+                    quill.clipboard.dangerouslyPasteHTML(hiddenInput.value);
+                }
+
+                form.addEventListener('submit', function () {
+                    const html = quill.root.innerHTML;
+                    hiddenInput.value = html === '<p><br></p>' ? '' : html;
+                });
+            })();
+        </script>
+    }
+}

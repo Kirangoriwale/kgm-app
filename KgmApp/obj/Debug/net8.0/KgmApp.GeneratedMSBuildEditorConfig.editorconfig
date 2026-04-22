@@ -1,0 +1,245 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = KgmApp
+build_property.RootNamespace = KgmApp
+build_property.ProjectDir = D:\KIran_Project\Bakup-Copy\KgmApp\KgmApp\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\KIran_Project\Bakup-Copy\KgmApp\KgmApp
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Account/ChangePassword.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxDaGFuZ2VQYXNzd29yZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Account/SettingsChangePassword.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxTZXR0aW5nc0NoYW5nZVBhc3N3b3JkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Announcement/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQW5ub3VuY2VtZW50XENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Announcement/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQW5ub3VuY2VtZW50XERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Announcement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQW5ub3VuY2VtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/FeeSetting/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVlU2V0dGluZ1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/FeeSetting/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVlU2V0dGluZ1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/FeeSetting/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVlU2V0dGluZ1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/FeeSetting/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVlU2V0dGluZ1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/FeeSetting/_FeeSettingFormFields.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRmVlU2V0dGluZ1xfRmVlU2V0dGluZ0Zvcm1GaWVsZHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Home/AboutUs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBYm91dFVzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Home/CommitteeMembers.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDb21taXR0ZWVNZW1iZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Home/MemberDashboard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNZW1iZXJEYXNoYm9hcmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Home/MemberGeneralMeetingAttendance.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNZW1iZXJHZW5lcmFsTWVldGluZ0F0dGVuZGFuY2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Home/MemberPaidDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNZW1iZXJQYWlkRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Home/MemberPendingDetails.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxNZW1iZXJQZW5kaW5nRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/LoginLogs/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9naW5Mb2dzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Meeting/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVldGluZ1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Meeting/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVldGluZ1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Meeting/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVldGluZ1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Meeting/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVldGluZ1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Meeting/MarkAttendance.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVldGluZ1xNYXJrQXR0ZW5kYW5jZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Member/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVtYmVyXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Member/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVtYmVyXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Member/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVtYmVyXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Member/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVtYmVyXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Member/ImportExcel.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVtYmVyXEltcG9ydEV4Y2VsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Member/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVtYmVyXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Member/_MemberFormFields.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVtYmVyXF9NZW1iZXJGb3JtRmllbGRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Report/AttendanceReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0XEF0dGVuZGFuY2VSZXBvcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Report/ContributionReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0XENvbnRyaWJ1dGlvblJlcG9ydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Report/Statement.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVwb3J0XFN0YXRlbWVudC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/RulesRegulations/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUnVsZXNSZWd1bGF0aW9uc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Shared/Components/SidebarMenu/Default.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXENvbXBvbmVudHNcU2lkZWJhck1lbnVcRGVmYXVsdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/SubMembers/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3ViTWVtYmVyc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/SubMembers/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3ViTWVtYmVyc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Suggestion/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3VnZ2VzdGlvblxEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Suggestion/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3VnZ2VzdGlvblxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Transaction/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhbnNhY3Rpb25cQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Transaction/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhbnNhY3Rpb25cRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Transaction/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhbnNhY3Rpb25cRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Transaction/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVHJhbnNhY3Rpb25cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/UserRights/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclJpZ2h0c1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/User/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/User/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/User/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/User/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/User/_UserFormFields.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxfVXNlckZvcm1GaWVsZHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/KIran_Project/Bakup-Copy/KgmApp/KgmApp/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-09qnqi9s4a

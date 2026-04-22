@@ -1,0 +1,31 @@
+@model KgmApp.Models.Member
+@{
+    ViewData["Title"] = "Create Member";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-action="Index">Members</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
+
+        <h1 class="h3 mb-4">Create Member</h1>
+
+        <form asp-action="Create" method="post" class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <partial name="_MemberFormFields" model="Model" />
+            </div>
+            <div class="card-footer bg-white border-top-0 px-4 pb-4 d-flex flex-column flex-sm-row gap-2 justify-content-sm-end">
+                <a class="btn btn-outline-secondary order-sm-0" asp-action="Index">Cancel</a>
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

@@ -1,0 +1,80 @@
+@model KgmApp.Models.UserRightsIndexViewModel
+@{
+    ViewData["Title"] = "User Rights";
+    ViewData["PageTitle"] = "User Rights";
+    ViewData["BreadcrumbCurrent"] = "User Rights";
+    var menuNames = KgmApp.Models.MenuCatalog.All.ToDictionary(m => m.Key, m => m.DisplayName, StringComparer.Ordinal);
+}
+
+<div class="d-flex justify-content-end mb-3">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Dashboard
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Filter by role</h5>
+        <form method="get" asp-action="Index" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Role</label>
+                <select name="role" class="form-select" asp-items="ViewBag.RoleList"></select>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-funnel me-1"></i>Filter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<form asp-action="Save" method="post" class="card border-0 shadow-sm rounded-3">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="role" value="@Model.SelectedRole" />
+    <div class="card-body">
+        <h5 class="card-title mb-3">Menu permissions for <span class="text-primary">@Model.SelectedRole</span></h5>
+        <p class="small text-muted">If <strong>View</strong> is off for a menu, users with this role will not see that menu. Add / Edit / Delete control actions on those screens.</p>
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Menu</th>
+                        <th scope="col" class="text-center">View</th>
+                        <th scope="col" class="text-center">Add</th>
+                        <th scope="col" class="text-center">Edit</th>
+                        <th scope="col" class="text-center">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for (var i = 0; i < Model.Items.Count; i++)
+                {
+                    var item = Model.Items[i];
+                    var label = menuNames.TryGetValue(item.MenuKey, out var dn) ? dn : item.MenuKey;
+                    <tr>
+                        <td>@label</td>
+                        <td class="text-center">
+                            <input type="hidden" asp-for="Items[i].MenuKey" />
+                            <input class="form-check-input" type="checkbox" asp-for="Items[i].CanView" />
+                        </td>
+                        <td class="text-center">
+                            <input class="form-check-input" type="checkbox" asp-for="Items[i].CanAdd" />
+                        </td>
+                        <td class="text-center">
+                            <input class="form-check-input" type="checkbox" asp-for="Items[i].CanEdit" />
+                        </td>
+                        <td class="text-center">
+                            <input class="form-check-input" type="checkbox" asp-for="Items[i].CanDelete" />
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-save me-1"></i>Save rights
+            </button>
+        </div>
+    </div>
+</form>

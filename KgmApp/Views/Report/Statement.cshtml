@@ -1,0 +1,221 @@
+@model KgmApp.Models.Reports.StatementReportViewModel
+@{
+    ViewData["Title"] = "Statement";
+    ViewData["PageTitle"] = "Statement";
+    ViewData["BreadcrumbCurrent"] = "Statement";
+
+    var fromDate = ViewData["FromDate"] as string ?? Model.FromDate.ToString("yyyy-MM-dd");
+    var toDate = ViewData["ToDate"] as string ?? Model.ToDate.ToString("yyyy-MM-dd");
+}
+
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-end gap-3 mb-4">
+    <form method="get" asp-action="Statement" class="card border-0 shadow-sm rounded-3 p-3 w-100">
+        <div class="row g-2 align-items-end">
+            <div class="col-12 col-md-4">
+                <label class="form-label mb-1">From date</label>
+                <input type="date" name="fromDate" class="form-control" value="@fromDate" required />
+            </div>
+            <div class="col-12 col-md-4">
+                <label class="form-label mb-1">To date</label>
+                <input type="date" name="toDate" class="form-control" value="@toDate" required />
+            </div>
+            <div class="col-12 col-md-4 d-flex flex-wrap gap-2 align-items-center">
+                <button type="submit" class="btn btn-primary">Show statement</button>
+                <a class="btn btn-outline-danger d-inline-flex align-items-center gap-2"
+                   asp-controller="Report"
+                   asp-action="StatementPdf"
+                   asp-route-fromDate="@fromDate"
+                   asp-route-toDate="@toDate"
+                   title="Download PDF for the selected date range">
+                    <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>
+                    Download PDF
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<p class="text-muted small mb-3">
+    Period: <strong>@Model.FromDate.ToString("dd-MMM-yyyy")</strong> to <strong>@Model.ToDate.ToString("dd-MMM-yyyy")</strong> (inclusive).
+    Opening balances are as at the start of the from date; closing balances include all transactions through the to date.
+</p>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="card border shadow-sm rounded-3 h-100 border-start border-5 border-warning">
+            <div class="card-body p-4">
+                <div class="text-muted small text-uppercase fw-semibold mb-1">Opening — Cash in hand</div>
+                <div class="h4 fw-bold mb-0">@Model.OpeningCashInHand.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card border shadow-sm rounded-3 h-100 border-start border-5 border-primary">
+            <div class="card-body p-4">
+                <div class="text-muted small text-uppercase fw-semibold mb-1">Opening — Cash in bank</div>
+                <div class="h4 fw-bold mb-0">@Model.OpeningBankBalance.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card border shadow-sm rounded-3 h-100 border-start border-5 border-success">
+            <div class="card-body p-4">
+                <div class="text-muted small text-uppercase fw-semibold mb-1">Opening — Total cash</div>
+                <div class="text-muted small mb-1">Cash in hand + cash in bank</div>
+                <div class="h4 fw-bold mb-0">@Model.OpeningTotalCash.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-header bg-white border-bottom py-3">
+        <h2 class="h5 mb-0 text-success"><i class="bi bi-graph-up-arrow me-2" aria-hidden="true"></i>Income (head-wise)</h2>
+        <p class="text-muted small mb-0 mt-2">Description is listed per transaction. For <strong>Member Registration</strong>, <strong>SubMember Registration</strong>, and <strong>HalfYearly Contribution</strong>, only one total line per head is shown (no description).</p>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Head (category)</th>
+                    <th>Description</th>
+                    <th class="text-end">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.IncomeLines.Count == 0)
+            {
+                <tr>
+                    <td colspan="3" class="text-muted text-center py-4">No income in this period.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var row in Model.IncomeLines)
+                {
+                    <tr>
+                        <td class="text-nowrap">@row.Head</td>
+                        <td class="text-break" style="min-width: 12rem; max-width: 28rem;">
+                            @if (row.ShowDescription)
+                            {
+                                @(string.IsNullOrEmpty(row.Description) ? "—" : row.Description)
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                        <td class="text-end fw-semibold text-nowrap">@row.Amount.ToString("N2")</td>
+                    </tr>
+                }
+                <tr class="table-light">
+                    <td colspan="2" class="fw-bold">Total income</td>
+                    <td class="text-end fw-bold">@Model.TotalIncomeInPeriod.ToString("N2")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-header bg-white border-bottom py-3">
+        <h2 class="h5 mb-0 text-danger"><i class="bi bi-graph-down-arrow me-2" aria-hidden="true"></i>Expenses (head-wise)</h2>
+        <p class="text-muted small mb-0 mt-2">Description is listed per transaction. For <strong>Member Registration</strong>, <strong>SubMember Registration</strong>, and <strong>HalfYearly Contribution</strong>, only one total line per head is shown (no description).</p>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Head (category)</th>
+                    <th>Description</th>
+                    <th class="text-end">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.ExpenseLines.Count == 0)
+            {
+                <tr>
+                    <td colspan="3" class="text-muted text-center py-4">No expenses in this period.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var row in Model.ExpenseLines)
+                {
+                    <tr>
+                        <td class="text-nowrap">@row.Head</td>
+                        <td class="text-break" style="min-width: 12rem; max-width: 28rem;">
+                            @if (row.ShowDescription)
+                            {
+                                @(string.IsNullOrEmpty(row.Description) ? "—" : row.Description)
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                        <td class="text-end fw-semibold text-nowrap">@row.Amount.ToString("N2")</td>
+                    </tr>
+                }
+                <tr class="table-light">
+                    <td colspan="2" class="fw-bold">Total expenses</td>
+                    <td class="text-end fw-bold">@Model.TotalExpenseInPeriod.ToString("N2")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 mb-4">
+    <div class="card-header bg-white border-bottom py-3">
+        <h2 class="h5 mb-0 text-secondary"><i class="bi bi-arrow-left-right me-2" aria-hidden="true"></i>Transfers (cash ↔ bank)</h2>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <tbody>
+                    <tr>
+                        <td>Cash deposit to bank</td>
+                        <td class="text-end text-muted small">reduces cash, increases bank</td>
+                        <td class="text-end fw-semibold">@Model.PeriodCashDepositToBank.ToString("N2")</td>
+                    </tr>
+                    <tr>
+                        <td>Bank withdrawal</td>
+                        <td class="text-end text-muted small">increases cash, reduces bank</td>
+                        <td class="text-end fw-semibold">@Model.PeriodBankWithdrawal.ToString("N2")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-12 col-md-4">
+        <div class="card border shadow-sm rounded-3 h-100 border-start border-5 border-warning">
+            <div class="card-body p-4">
+                <div class="text-muted small text-uppercase fw-semibold mb-1">Closing — Cash in hand</div>
+                <div class="h4 fw-bold mb-0">@Model.ClosingCashInHand.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card border shadow-sm rounded-3 h-100 border-start border-5 border-primary">
+            <div class="card-body p-4">
+                <div class="text-muted small text-uppercase fw-semibold mb-1">Closing — Cash in bank</div>
+                <div class="h4 fw-bold mb-0">@Model.ClosingBankBalance.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card border shadow-sm rounded-3 h-100 border-start border-5 border-success">
+            <div class="card-body p-4">
+                <div class="text-muted small text-uppercase fw-semibold mb-1">Closing — Total cash</div>
+                <div class="text-muted small mb-1">Cash in hand + cash in bank</div>
+                <div class="h4 fw-bold mb-0">@Model.ClosingTotalCash.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+</div>

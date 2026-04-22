@@ -1,0 +1,223 @@
+@model KgmApp.Models.Transaction
+@{
+    ViewData["Title"] = "Create Transaction";
+    var categories = ViewData["Categories"] as IReadOnlyList<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? [];
+    var paymentModes = ViewData["PaymentModes"] as IReadOnlyList<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? [];
+    var members = ViewData["Members"] as IReadOnlyList<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? [];
+    var subMembers = ViewData["SubMembers"] as IReadOnlyList<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? [];
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-9">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a asp-action="Index">Transactions</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create</li>
+            </ol>
+        </nav>
+
+        <h1 class="h3 mb-4">Create Transaction</h1>
+
+        <form asp-action="Create" method="post" class="card border-0 shadow-sm rounded-3">
+            <div class="card-body p-4">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <label asp-for="TransactionDate" class="form-label"></label>
+                        <input asp-for="TransactionDate" type="date" class="form-control" />
+                        <span asp-validation-for="TransactionDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label asp-for="Category" class="form-label"></label>
+                        <select asp-for="Category" class="form-select" id="transactionCategory">
+                            @foreach (var item in categories)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Category" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label asp-for="PaymentMode" class="form-label"></label>
+                        <select asp-for="PaymentMode" class="form-select">
+                            @foreach (var item in paymentModes)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="PaymentMode" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6" id="memberField">
+                        <label asp-for="MemberId" class="form-label">Member</label>
+                        <select asp-for="MemberId" class="form-select" id="memberSelect">
+                            <option value="">Select member</option>
+                            @foreach (var item in members)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="MemberId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 d-none" id="subMemberField">
+                        <label asp-for="SubMemberId" class="form-label">SubMember</label>
+                        <select asp-for="SubMemberId" class="form-select" id="subMemberSelect">
+                            <option value="">Select sub-member</option>
+                            @foreach (var item in subMembers)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="SubMemberId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 d-none" id="donorNameField">
+                        <label asp-for="DonorName" class="form-label"></label>
+                        <input asp-for="DonorName" class="form-control" />
+                        <span asp-validation-for="DonorName" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-md-6 d-none" id="donorMobileField">
+                        <label asp-for="DonorMobile" class="form-label"></label>
+                        <input asp-for="DonorMobile" class="form-control" />
+                        <span asp-validation-for="DonorMobile" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <label asp-for="Amount" class="form-label"></label>
+                        <input asp-for="Amount" type="number" step="0.01" min="0" class="form-control" id="transactionAmount" />
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white border-top-0 px-4 pb-4 d-flex flex-column flex-sm-row gap-2 justify-content-sm-end">
+                <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Transaction</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        (function () {
+            const categoryEl = document.getElementById("transactionCategory");
+            const amountEl = document.getElementById("transactionAmount");
+            const memberField = document.getElementById("memberField");
+            const subMemberField = document.getElementById("subMemberField");
+            const donorNameField = document.getElementById("donorNameField");
+            const donorMobileField = document.getElementById("donorMobileField");
+            const memberSelect = document.getElementById("memberSelect");
+            const subMemberSelect = document.getElementById("subMemberSelect");
+
+            if (!categoryEl || !amountEl || !memberField || !subMemberField || !donorNameField || !donorMobileField || !memberSelect || !subMemberSelect) return;
+
+            function toggleField(element, show) {
+                element.classList.toggle("d-none", !show);
+            }
+
+            function setAmount(value, readOnly) {
+                amountEl.value = value;
+                amountEl.readOnly = readOnly;
+            }
+
+            function resetSelection(selectElement) {
+                selectElement.value = "";
+            }
+
+            function updateByCategory() {
+                const category = categoryEl.value;
+
+                if (category === "@KgmApp.Models.Transaction.CategoryMemberRegistration") {
+                    toggleField(memberField, true);
+                    toggleField(subMemberField, false);
+                    toggleField(donorNameField, false);
+                    toggleField(donorMobileField, false);
+                    resetSelection(subMemberSelect);
+                    setAmount("50", true);
+                    return;
+                }
+
+                if (category === "@KgmApp.Models.Transaction.CategorySubMemberRegistration") {
+                    toggleField(memberField, false);
+                    toggleField(subMemberField, true);
+                    toggleField(donorNameField, false);
+                    toggleField(donorMobileField, false);
+                    resetSelection(memberSelect);
+                    setAmount("50", true);
+                    return;
+                }
+
+                if (category === "@KgmApp.Models.Transaction.CategoryHalfYearlyContribution") {
+                    toggleField(memberField, true);
+                    toggleField(subMemberField, false);
+                    toggleField(donorNameField, false);
+                    toggleField(donorMobileField, false);
+                    resetSelection(subMemberSelect);
+                    if (!amountEl.value || Number(amountEl.value) <= 0) {
+                        amountEl.value = "200";
+                    }
+                    amountEl.readOnly = false;
+                    return;
+                }
+
+                if (category === "@KgmApp.Models.Transaction.CategoryDonation") {
+                    toggleField(memberField, false);
+                    toggleField(subMemberField, false);
+                    toggleField(donorNameField, true);
+                    toggleField(donorMobileField, true);
+                    resetSelection(memberSelect);
+                    resetSelection(subMemberSelect);
+                    amountEl.readOnly = false;
+                    if (!amountEl.value || Number(amountEl.value) <= 0) {
+                        amountEl.value = "";
+                    }
+                    return;
+                }
+
+                if (category === "@KgmApp.Models.Transaction.CategoryBankInterest" ||
+                    category === "@KgmApp.Models.Transaction.CategoryBankCharges" ||
+                    category === "@KgmApp.Models.Transaction.CategoryCashDepositToBank" ||
+                    category === "@KgmApp.Models.Transaction.CategoryBankWithdrawal") {
+                    toggleField(memberField, false);
+                    toggleField(subMemberField, false);
+                    toggleField(donorNameField, false);
+                    toggleField(donorMobileField, false);
+                    resetSelection(memberSelect);
+                    resetSelection(subMemberSelect);
+                    amountEl.readOnly = false;
+                    if (!amountEl.value || Number(amountEl.value) <= 0) {
+                        amountEl.value = "";
+                    }
+                    return;
+                }
+
+                toggleField(memberField, false);
+                toggleField(subMemberField, false);
+                toggleField(donorNameField, false);
+                toggleField(donorMobileField, false);
+                resetSelection(memberSelect);
+                resetSelection(subMemberSelect);
+                amountEl.readOnly = false;
+                if (!amountEl.value || Number(amountEl.value) <= 0) {
+                    amountEl.value = "";
+                }
+            }
+
+            categoryEl.addEventListener("change", updateByCategory);
+            updateByCategory();
+        })();
+    </script>
+}

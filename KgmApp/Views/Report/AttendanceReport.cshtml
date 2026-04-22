@@ -1,0 +1,155 @@
+@model KgmApp.Models.Reports.AttendanceReportViewModel
+@{
+    var pageTitle = ViewData["PageTitle"] as string ?? "Attendance Report";
+    var filterAction = ViewData["FilterAction"] as string ?? "AttendanceReport";
+    var pdfAction = ViewData["PdfAction"] as string ?? "AttendanceReportPdf";
+    var resetAction = ViewData["ResetAction"] as string ?? "AttendanceReport";
+
+    var meetings = Model.Meetings ?? [];
+    var rows = Model.Rows ?? [];
+    var memberName = ViewData["MemberName"] as string ?? string.Empty;
+    var remark = ViewData["Remark"] as string ?? string.Empty;
+    var showDesignationColumn = (ViewData["ShowDesignationColumn"] as bool?) ?? false;
+}
+
+<div class="mb-3">
+    <form method="get" asp-action="@filterAction" class="card border-0 shadow-sm rounded-3 p-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-12 col-md-6">
+                <label class="form-label mb-1">Member Name</label>
+                <input type="text" name="memberName" class="form-control" value="@memberName" placeholder="Search member name" />
+            </div>
+            <div class="col-12 col-md-4">
+                <label class="form-label mb-1">Remark</label>
+                <select name="remark" class="form-select">
+                    @if (string.IsNullOrWhiteSpace(remark))
+                    {
+                        <option value="" selected>All</option>
+                    }
+                    else
+                    {
+                        <option value="">All</option>
+                    }
+                    @if (string.Equals(remark, "Absent", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <option value="Absent" selected>Absent</option>
+                    }
+                    else
+                    {
+                        <option value="Absent">Absent</option>
+                    }
+                    @if (string.Equals(remark, "Blank", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <option value="Blank" selected>Blank</option>
+                    }
+                    else
+                    {
+                        <option value="Blank">Blank</option>
+                    }
+                </select>
+            </div>
+            <div class="col-12 col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-outline-primary">Filter</button>
+                <a asp-action="@resetAction" class="btn btn-outline-secondary">Reset</a>
+            </div>
+            <div class="col-12">
+                <a asp-action="@pdfAction"
+                   asp-route-memberName="@memberName"
+                   asp-route-remark="@remark"
+                   target="_blank"
+                   class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+                </a>
+            </div>
+            <div class="col-12">
+                <div class="text-muted small text-md-end mt-1">
+                    Filtered Members: <strong>@rows.Count</strong> | Meetings: <strong>@meetings.Count</strong>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@if (!rows.Any() || !meetings.Any())
+{
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body text-center py-5 text-muted">
+            <i class="bi bi-inbox display-6 d-block mb-3" aria-hidden="true"></i>
+            @pageTitle requires both members and meetings.
+        </div>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="table-responsive" style="overflow-x:auto;">
+            <table class="table table-bordered table-hover align-middle mb-0" style="min-width: 1050px;">
+                <thead>
+                    <tr>
+                        <th class="table-dark text-nowrap">Sr</th>
+                        <th class="table-dark text-nowrap">Member Name</th>
+                        @if (showDesignationColumn)
+                        {
+                            <th class="table-dark text-nowrap">Designation</th>
+                        }
+                        <th class="table-dark text-nowrap">Mobile No</th>
+                        @foreach (var mt in meetings)
+                        {
+                            <th class="table-primary text-center text-nowrap">
+                                @mt.MeetingDate.ToString("dd-MMM-yy")
+                                <div class="small text-muted">(@mt.PresentPercent.ToString("0.##")%)</div>
+                            </th>
+                        }
+                        <th class="table-info text-nowrap text-center">Score</th>
+                        <th class="table-warning text-nowrap text-center">Remark</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in rows)
+                {
+                    var presentCount = row.PresenceByMeeting.Values.Count(v => v);
+                    var totalMeetings = meetings.Count;
+                    <tr>
+                        <td>@row.Sr</td>
+                        <td class="fw-semibold">@row.MemberName</td>
+                        @if (showDesignationColumn)
+                        {
+                            <td>@(string.IsNullOrWhiteSpace(row.Designation) ? "-" : row.Designation)</td>
+                        }
+                        <td>@row.MobileNo</td>
+                        @foreach (var mt in meetings)
+                        {
+                            var present = row.PresenceByMeeting.TryGetValue(mt.MeetingId, out var isPresent) && isPresent;
+                            <td class="text-center">
+                                @if (present)
+                                {
+                                    <span class="badge member-status-badge member-status-yes">P</span>
+                                }
+                                else
+                                {
+                                    <span class="badge member-status-badge member-status-no">A</span>
+                                }
+                            </td>
+                        }
+                        <td class="text-center fw-semibold">@presentCount/@totalMeetings</td>
+                        <td class="text-center fw-semibold">@row.Remark</td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                    <tr class="table-dark">
+                        <td class="fw-bold">Grand Total</td>
+                        <td colspan="@(showDesignationColumn ? 3 : 2)"></td>
+                        @foreach (var mt in meetings)
+                        {
+                            <td class="text-center fw-bold">@mt.PresentCount</td>
+                        }
+                        <td class="text-center fw-bold"></td>
+                        <td class="text-center fw-bold">@rows.Count(r => string.Equals(r.Remark, "Absent", StringComparison.OrdinalIgnoreCase))</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+}
+

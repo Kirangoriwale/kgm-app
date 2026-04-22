@@ -1,0 +1,112 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    var pageTitle = (ViewData["PageTitle"] as string) ?? (ViewData["Title"] as string) ?? "Dashboard";
+    var breadcrumbCurrent = ViewData["BreadcrumbCurrent"] as string;
+    var currentUsername = Context.Session.GetString("MemberName") ?? Context.Session.GetString("Username");
+    var currentRole = Context.Session.GetString("Role");
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@(ViewData["Title"] ?? "Home") — Khamgaon</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/KgmApp.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("Head", required: false)
+</head>
+<body class="app-shell bg-body-secondary">
+    <div class="app-overlay d-lg-none" id="appOverlay"></div>
+
+    <div class="app-layout d-flex min-vh-100">
+        <aside class="app-sidebar bg-dark text-white shadow-lg" id="appSidebar">
+            <div class="sidebar-top d-flex align-items-center justify-content-between">
+                <a class="sidebar-brand d-flex align-items-center text-decoration-none text-white" asp-controller="Home" asp-action="Index">
+                    <span class="sidebar-brand-icon rounded-3 d-inline-flex align-items-center justify-content-center">
+                        <i class="bi bi-people-fill" aria-hidden="true"></i>
+                    </span>
+                    <span class="sidebar-label ms-2 fw-semibold">Khamgaon</span>
+                </a>
+                <button class="btn btn-sm btn-outline-light d-none d-lg-inline-flex sidebar-collapse-btn"
+                        type="button"
+                        id="sidebarDesktopToggle"
+                        aria-label="Toggle sidebar">
+                    <i class="bi bi-list" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav mt-3">
+                @await Component.InvokeAsync("SidebarMenu")
+            </nav>
+        </aside>
+
+        <div class="app-main d-flex flex-column flex-grow-1">
+            <header class="content-topbar bg-white shadow-sm">
+                <div class="d-flex align-items-center justify-content-between gap-3 px-3 px-md-4 py-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-outline-secondary d-lg-none"
+                                type="button"
+                                id="sidebarMobileToggle"
+                                aria-label="Open sidebar menu">
+                            <i class="bi bi-list" aria-hidden="true"></i>
+                        </button>
+                        <h1 class="h4 mb-0 text-dark">@pageTitle</h1>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(currentUsername))
+                    {
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge text-bg-light border text-dark d-none d-sm-inline-flex">
+                                @currentUsername (@currentRole)
+                            </span>
+                            <a class="btn btn-sm btn-outline-danger" asp-controller="Account" asp-action="Logout">Logout</a>
+                        </div>
+                    }
+                </div>
+            </header>
+
+            <main class="app-content flex-grow-1 px-3 px-md-4 py-4" role="main">
+                @if (!string.IsNullOrEmpty(breadcrumbCurrent))
+                {
+                    <nav aria-label="breadcrumb" class="mb-3">
+                        <ol class="breadcrumb mb-0 small">
+                            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none">Dashboard</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">@breadcrumbCurrent</li>
+                        </ol>
+                    </nav>
+                }
+
+                @if (TempData["SuccessMessage"] is string successMsg && !string.IsNullOrWhiteSpace(successMsg))
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @successMsg
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @if (TempData["LayoutError"] is string layoutErr && !string.IsNullOrWhiteSpace(layoutErr))
+                {
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        @layoutErr
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                @RenderBody()
+            </main>
+
+            <footer class="content-footer border-top bg-white mt-auto py-3 px-3 px-md-4">
+                <div class="small text-muted text-center text-md-start">
+                    © 2026 खामगांव ग्रामस्थ मंडळ, मुंबई  | Developed By Kiran Goriwale
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

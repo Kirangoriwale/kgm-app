@@ -1,0 +1,160 @@
+@model IEnumerable<KgmApp.Models.Transaction>
+@{
+    ViewData["Title"] = "Transactions";
+    ViewData["PageTitle"] = "Transactions";
+    ViewData["BreadcrumbCurrent"] = "Transactions";
+
+    var fromDate = ViewData["FromDate"] as string ?? string.Empty;
+    var toDate = ViewData["ToDate"] as string ?? string.Empty;
+    var paymentMode = ViewData["PaymentMode"] as string ?? string.Empty;
+    var paymentModes = ViewData["PaymentModes"] as IReadOnlyList<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? [];
+    var category = ViewData["Category"] as string ?? string.Empty;
+    var categories = ViewData["Categories"] as IReadOnlyList<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> ?? [];
+}
+
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-end gap-3 mb-4">
+    <form method="get" class="card border-0 shadow-sm rounded-3 p-3 w-100">
+        <div class="row g-2 align-items-end">
+            <div class="col-12 col-md-3">
+                <label class="form-label mb-1">From date</label>
+                <input type="date" name="fromDate" class="form-control" value="@fromDate" />
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label mb-1">To date</label>
+                <input type="date" name="toDate" class="form-control" value="@toDate" />
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label mb-1">Payment Mode</label>
+                <select name="paymentMode" class="form-select">
+                    @foreach (var item in paymentModes)
+                    {
+                        if (item.Value == paymentMode)
+                        {
+                            <option value="@item.Value" selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-12 col-md-3">
+                <label class="form-label mb-1">Category</label>
+                <select name="category" class="form-select">
+                    @foreach (var item in categories)
+                    {
+                        if (item.Value == category)
+                        {
+                            <option value="@item.Value" selected>@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-outline-primary">Filter</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+            </div>
+        </div>
+    </form>
+
+    @if (ViewMenu.Can(ViewData, MenuKeys.Transactions, "Add"))
+    {
+        <a class="btn btn-primary d-inline-flex align-items-center gap-2 text-nowrap" asp-action="Create">
+            <i class="bi bi-plus-circle"></i>
+            Add Transaction
+        </a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body text-center py-5 text-muted">
+            <i class="bi bi-receipt-cutoff display-6 d-block mb-3"></i>
+            No transactions found for selected filters.
+        </div>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Member/SubMember/Donor</th>
+                        <th class="d-none d-xl-table-cell">Description</th>
+                        <th class="text-end">Amount</th>
+                        <th>Payment</th>
+                        <th>Type</th>
+                        <th>Created By</th>
+                        <th>Modified By</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var tx in Model)
+                {
+                    var party = tx.Member?.Name ?? tx.SubMember?.Name ?? tx.DonorName ?? "-";
+                    <tr>
+                        <td>@tx.TransactionDate.ToString("dd-MMM-yyyy")</td>
+                        <td>@tx.Category</td>
+                        <td class="text-break">@party</td>
+                        <td class="text-break d-none d-xl-table-cell" style="min-width: 14rem; max-width: 22rem;">
+                            @if (!string.IsNullOrWhiteSpace(tx.Description))
+                            {
+                                @tx.Description
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                        <td class="text-end fw-semibold">@tx.Amount.ToString("0.00")</td>
+                        <td>@tx.PaymentMode</td>
+                        <td>
+                            @if (tx.Type == KgmApp.Models.Transaction.TypeIncome)
+                            {
+                                <span class="badge member-status-badge member-status-yes">Income</span>
+                            }
+                            else if (tx.Type == KgmApp.Models.Transaction.TypeExpense)
+                            {
+                                <span class="badge member-status-badge member-status-no">Expense</span>
+                            }
+                            else
+                            {
+                                <span class="badge member-status-badge bg-dark text-white">Transfer</span>
+                            }
+                        </td>
+                        <td>@tx.CreatedBy</td>
+                        <td>@tx.ModifiedBy</td>
+                        <td class="text-end text-nowrap">
+                            @if (ViewMenu.Can(ViewData, MenuKeys.Transactions, "Edit"))
+                            {
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@tx.Id" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                    <span class="d-none d-md-inline ms-1">Edit</span>
+                                </a>
+                            }
+                            @if (ViewMenu.Can(ViewData, MenuKeys.Transactions, "Delete"))
+                            {
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@tx.Id" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                    <span class="d-none d-md-inline ms-1">Delete</span>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

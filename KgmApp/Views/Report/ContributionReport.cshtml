@@ -1,0 +1,160 @@
+@model KgmApp.Models.Reports.ContributionReportViewModel
+@{
+    ViewData["Title"] = "Contribution Report";
+    ViewData["PageTitle"] = "Contribution Report";
+    ViewData["BreadcrumbCurrent"] = "Contribution Report";
+
+    var periods = Model.Periods;
+    var years = periods
+        .GroupBy(p => p.FinancialYearLabel)
+        .OrderBy(g => g.Key)
+        .ToList();
+
+    var rows = Model.Rows ?? [];
+    var registrationFeeGrandTotal = rows.Sum(r => r.RegistrationFeePaid);
+    var expectedGrandTotal = rows.Sum(r => r.ExpectedTotal);
+    var totalPaidGrandTotal = rows.Sum(r => r.TotalPaid);
+    var pendingGrandTotal = rows.Sum(r => r.TotalPendingAmount);
+
+    var periodGrandTotals = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+    foreach (var p in periods)
+    {
+        var total = 0m;
+        foreach (var r in rows)
+        {
+            if (r.PaidByPeriod.TryGetValue(p.Key, out var v))
+                total += v;
+        }
+        periodGrandTotals[p.Key] = total;
+    }
+}
+
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-end gap-3 mb-3">
+    <div>
+        <div class="text-muted small">Contribution Start Date</div>
+        <div class="fw-semibold">@Model.ContributionStartDate.ToString("dd-MMM-yyyy")</div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body py-2 px-3">
+                <div class="text-muted small">Total Members</div>
+                <div class="fw-bold fs-5">@Model.TotalMembers</div>
+            </div>
+        </div>
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body py-2 px-3">
+                <div class="text-muted small">Paid Count</div>
+                <div class="fw-bold fs-5 text-success">@Model.PaidCount</div>
+            </div>
+        </div>
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-body py-2 px-3">
+                <div class="text-muted small">Pending Count</div>
+                <div class="fw-bold fs-5 text-warning">@Model.PendingCount</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
+    <a class="btn btn-outline-danger d-inline-flex align-items-center gap-2"
+       asp-action="ContributionReportPdf"
+       title="Download Contribution Report as PDF">
+        <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>
+        Download PDF
+    </a>
+    <a class="btn btn-outline-primary d-inline-flex align-items-center gap-2"
+       asp-action="ContributionReportJpg"
+       title="Download Contribution Report as JPG">
+        <i class="bi bi-file-earmark-image" aria-hidden="true"></i>
+        Download JPG
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="table-responsive" style="overflow-x:auto;">
+        <table class="table table-bordered table-hover align-middle mb-0" style="min-width: 980px;">
+            <thead>
+                <tr>
+                    <th class="table-dark" rowspan="2">Sr<br>No</th>
+                    <th class="table-dark" rowspan="2">Member<br>Name</th>
+                    <th class="table-dark" rowspan="2">Mobile<br>No</th>
+                    <th class="table-dark" rowspan="2">SubMember<br>1</th>
+                    <th class="table-dark" rowspan="2">SubMember<br>2</th>
+                    <th class="table-dark" rowspan="2">Registration<br>Form (YN)</th>
+                    <th class="table-dark text-end" rowspan="2">Registration<br>Fee (50)</th>
+
+                    @foreach (var y in years)
+                    {
+                        <th class="table-primary text-center text-nowrap" colspan="@y.Count()">@y.Key</th>
+                    }
+
+                    <th class="table-info text-end" rowspan="2">Expected<br>Total</th>
+                    <th class="table-success text-end" rowspan="2">Total<br>Paid</th>
+                    <th class="table-warning text-end" rowspan="2">Total Pending<br>Amount</th>
+                </tr>
+                <tr>
+                    @foreach (var y in years)
+                    {
+                        foreach (var p in y)
+                        {
+                            <th class="table-primary text-center">@p.PeriodLabel<br><span class="text-muted">(200)</span></th>
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in rows)
+                {
+                    var isPending = r.TotalPendingAmount > 0;
+                    <tr class="@(isPending ? "table-warning" : "")">
+                        <td>@r.SrNo</td>
+                        <td class="fw-semibold">@r.MemberName</td>
+                        <td>@r.MobileNo</td>
+                        <td>@r.SubMember1</td>
+                        <td>@r.SubMember2</td>
+                        <td class="text-center">
+                            @if (r.RegistrationFormSubmitted)
+                            {
+                                <span class="badge member-status-badge member-status-yes">Y</span>
+                            }
+                            else
+                            {
+                                <span class="badge member-status-badge member-status-no">N</span>
+                            }
+                        </td>
+                        <td class="text-end fw-semibold">@((r.RegistrationFeePaid <= 0) ? "" : r.RegistrationFeePaid.ToString("0"))</td>
+
+                        @foreach (var p in periods)
+                        {
+                            r.PaidByPeriod.TryGetValue(p.Key, out var v);
+                            <td class="text-center">@((v <= 0) ? "" : v.ToString("0"))</td>
+                        }
+
+                        <td class="text-end fw-bold">@((r.ExpectedTotal <= 0) ? "" : r.ExpectedTotal.ToString("0"))</td>
+                        <td class="text-end fw-bold">@((r.TotalPaid <= 0) ? "" : r.TotalPaid.ToString("0"))</td>
+                        <td class="text-end fw-bold">@((r.TotalPendingAmount <= 0) ? "" : r.TotalPendingAmount.ToString("0"))</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="table-dark">
+                    <td class="fw-bold">Grand<br>Total</td>
+                    <td colspan="5"></td>
+                    <td class="text-end fw-bold">@((registrationFeeGrandTotal <= 0) ? "" : registrationFeeGrandTotal.ToString("0"))</td>
+
+                    @foreach (var p in periods)
+                    {
+                        periodGrandTotals.TryGetValue(p.Key, out var t);
+                        <td class="text-center fw-bold">@((t <= 0) ? "" : t.ToString("0"))</td>
+                    }
+
+                    <td class="text-end fw-bold">@((expectedGrandTotal <= 0) ? "" : expectedGrandTotal.ToString("0"))</td>
+                    <td class="text-end fw-bold">@((totalPaidGrandTotal <= 0) ? "" : totalPaidGrandTotal.ToString("0"))</td>
+                    <td class="text-end fw-bold">@((pendingGrandTotal <= 0) ? "" : pendingGrandTotal.ToString("0"))</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+

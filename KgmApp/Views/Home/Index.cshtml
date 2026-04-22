@@ -1,0 +1,81 @@
+﻿@model KgmApp.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Mandal Dashboard";
+    ViewData["PageTitle"] = "Mandal Dashboard";
+    ViewData["BreadcrumbCurrent"] = null;
+}
+
+<div class="row g-3 g-lg-4">
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="card dashboard-stat-card dashboard-stat-card--members shadow-sm rounded-3 h-100">
+            <div class="card-body d-flex align-items-center gap-3 p-4">
+                <div class="dashboard-stat-icon rounded-3" aria-hidden="true">
+                    <i class="bi bi-person-badge fs-3"></i>
+                </div>
+                <div>
+                    <div class="text-muted small text-uppercase fw-semibold">Total members</div>
+                    <div class="display-6 fw-semibold text-dark lh-1">@Model.TotalMembers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="card dashboard-stat-card dashboard-stat-card--submembers shadow-sm rounded-3 h-100">
+            <div class="card-body d-flex align-items-center gap-3 p-4">
+                <div class="dashboard-stat-icon rounded-3" aria-hidden="true">
+                    <i class="bi bi-people fs-3"></i>
+                </div>
+                <div>
+                    <div class="text-muted small text-uppercase fw-semibold">Total SubMembers</div>
+                    <div class="display-6 fw-semibold text-dark lh-1">@Model.TotalSubMembers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="card dashboard-stat-card dashboard-stat-card--registration shadow-sm rounded-3 h-100">
+            <div class="card-body d-flex align-items-center gap-3 p-4">
+                <div class="dashboard-stat-icon rounded-3" aria-hidden="true">
+                    <i class="bi bi-file-earmark-check fs-3"></i>
+                </div>
+                <div>
+                    <div class="text-muted small text-uppercase fw-semibold">Registration form submitted</div>
+                    <div class="display-6 fw-semibold text-dark lh-1">@Model.RegistrationFormsSubmittedCount</div>
+                    <div class="small text-muted mt-1">Members + SubMembers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="card dashboard-stat-card dashboard-stat-card--cash shadow-sm rounded-3 h-100">
+            <div class="card-body d-flex align-items-center gap-3 p-4">
+                <div class="dashboard-stat-icon rounded-3" aria-hidden="true">
+                    <i class="bi bi-cash-coin fs-3"></i>
+                </div>
+                <div>
+                    <div class="text-muted small text-uppercase fw-semibold">Cash in Hand</div>
+                    <div class="h3 fw-semibold text-dark lh-1 mb-0">@Model.CashInHand.ToString("0.00")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="card dashboard-stat-card dashboard-stat-card--bank shadow-sm rounded-3 h-100">
+            <div class="card-body d-flex align-items-center gap-3 p-4">
+                <div class="dashboard-stat-icon rounded-3" aria-hidden="true">
+                    <i class="bi bi-bank fs-3"></i>
+                </div>
+                <div>
+                    <div class="text-muted small text-uppercase fw-semibold">Bank Balance</div>
+                    <div class="h3 fw-semibold text-dark lh-1 mb-0">@Model.BankBalance.ToString("0.00")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card dashboard-welcome-card shadow-sm rounded-3 mt-4">
+    <div class="card-body p-4">
+        <p class="text-muted mb-0">Welcome to <strong>Khamgaon Gramstha Mandal</strong>. Use the navigation to manage members and sub-members.</p>
+    </div>
+</div>

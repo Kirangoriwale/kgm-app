@@ -1,0 +1,97 @@
+@model KgmApp.Models.MemberGeneralMeetingAttendanceViewModel
+@{
+    ViewData["Title"] = "Attendance — general meetings";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+    <div>
+        <h1 class="h4 mb-1 text-dark">Attendance — general meetings</h1>
+        <p class="text-muted mb-0 small">@Model.MemberName</p>
+    </div>
+    <a asp-action="MemberDashboard" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1" aria-hidden="true"></i> Back to dashboard
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-0">
+        @if (Model.Rows.Count == 0)
+        {
+            <p class="text-muted small px-3 px-md-4 py-4 mb-0">No general meetings found. Titles must contain “general” (same rule as the attendance report).</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Meeting date</th>
+                            <th scope="col">Meeting title</th>
+                            <th scope="col">Location</th>
+                            <th scope="col" class="text-center text-nowrap">Minutes</th>
+                            <th scope="col">Absent / Present</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memberGeneralMeetingMinutesAccordion">
+                        @for (var i = 0; i < Model.Rows.Count; i++)
+                        {
+                            var row = Model.Rows[i];
+                            var collapseId = $"memberMeetingMinutes_{i}";
+                            <tr>
+                                <td class="text-nowrap">@row.MeetingDate.ToString("dd MMM yyyy")</td>
+                                <td>@row.Title</td>
+                                <td>@row.Location</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-info"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#@collapseId"
+                                            aria-expanded="false"
+                                            aria-controls="@collapseId">
+                                        View
+                                    </button>
+                                </td>
+                                <td>
+                                    @if (string.Equals(row.PresenceText, "Present", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="badge bg-success">Present</span>
+                                    }
+                                    else if (string.Equals(row.PresenceText, "Absent", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="badge bg-danger">Absent</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Not marked</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr id="@collapseId"
+                                class="collapse"
+                                data-bs-parent="#memberGeneralMeetingMinutesAccordion">
+                                <td colspan="5" class="bg-light">
+                                    <div class="p-3">
+                                        <div class="fw-semibold text-dark mb-1">Minutes of Meeting</div>
+                                        @{
+                                            var minutesHtml = row.MinutesOfMeeting?.Trim();
+                                            var hasMinutes = !string.IsNullOrWhiteSpace(minutesHtml)
+                                                && !string.Equals(minutesHtml, "<p><br></p>", StringComparison.OrdinalIgnoreCase);
+                                        }
+                                        @if (!hasMinutes)
+                                        {
+                                            <div class="small text-muted mb-0">No minutes added for this meeting.</div>
+                                        }
+                                        else
+                                        {
+                                            <div class="small text-body">@Html.Raw(minutesHtml)</div>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

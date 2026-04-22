@@ -1,0 +1,57 @@
+/* _content/KgmApp/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand[b-09qnqi9s4a] {
+  white-space: normal;
+  text-align: start;
+  word-break: normal;
+  line-height: 1.25;
+  max-width: min(100%, 16rem);
+}
+
+@media (min-width: 992px) {
+  a.navbar-brand[b-09qnqi9s4a] {
+    max-width: none;
+  }
+}
+
+a[b-09qnqi9s4a] {
+  color: #0077cc;
+}
+
+.btn-primary[b-09qnqi9s4a] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active[b-09qnqi9s4a], .nav-pills .show > .nav-link[b-09qnqi9s4a] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top[b-09qnqi9s4a] {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom[b-09qnqi9s4a] {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow[b-09qnqi9s4a] {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy[b-09qnqi9s4a] {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer[b-09qnqi9s4a] {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}

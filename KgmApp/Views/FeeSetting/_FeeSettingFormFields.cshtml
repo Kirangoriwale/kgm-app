@@ -1,0 +1,22 @@
+@model KgmApp.Models.FeeSetting
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <div class="col-12 col-md-4">
+        <label asp-for="ApplyFromDate" class="form-label"></label>
+        <input asp-for="ApplyFromDate" type="date" class="form-control" />
+        <span asp-validation-for="ApplyFromDate" class="text-danger"></span>
+    </div>
+    <div class="col-12 col-md-4">
+        <label asp-for="ContributionFee" class="form-label"></label>
+        <input asp-for="ContributionFee" type="number" step="0.01" min="0" class="form-control" />
+        <span asp-validation-for="ContributionFee" class="text-danger"></span>
+    </div>
+    <div class="col-12 col-md-4">
+        <label asp-for="RegistrationFee" class="form-label"></label>
+        <input asp-for="RegistrationFee" type="number" step="0.01" min="0" class="form-control" />
+        <span asp-validation-for="RegistrationFee" class="text-danger"></span>
+    </div>
+</div>
+

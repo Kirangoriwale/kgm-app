@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: kgmapp
+    runtime: dotnet
+    plan: free
+    buildCommand: dotnet restore KgmApp.sln && dotnet publish KgmApp/KgmApp.csproj -c Release -o out
+    startCommand: dotnet out/KgmApp.dll
+    healthCheckPath: /
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:$PORT
+      - key: DATABASE_URL
+        sync: false

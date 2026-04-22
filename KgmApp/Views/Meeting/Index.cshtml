@@ -1,0 +1,112 @@
+@model IEnumerable<KgmApp.Controllers.MeetingListRow>
+@{
+    ViewData["Title"] = "Meetings";
+    ViewData["PageTitle"] = "Meetings";
+    ViewData["BreadcrumbCurrent"] = "Meetings";
+    var totalMemberCount = ViewData["TotalMemberCount"] as int? ?? 0;
+}
+
+<div class="page-actions d-flex justify-content-end mb-4">
+    @if (ViewMenu.Can(ViewData, MenuKeys.Meetings, "Add"))
+    {
+        <a class="btn btn-primary rounded-3 d-inline-flex align-items-center justify-content-center gap-2" asp-action="Create">
+            <i class="bi bi-calendar-plus" aria-hidden="true"></i>
+            Add Meeting
+        </a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body text-center py-5 text-muted">
+            <i class="bi bi-inbox display-6 d-block mb-3" aria-hidden="true"></i>
+            No meetings found. Use <strong>Add Meeting</strong> to create one.
+        </div>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Location</th>
+                        <th>Description</th>
+                        <th class="text-center text-nowrap">Minutes</th>
+                        <th class="text-end">Present</th>
+                        <th class="text-end">%</th>
+                        <th class="text-end text-nowrap">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="meetingMinutesAccordion">
+                @foreach (var row in Model)
+                {
+                    var percent = totalMemberCount > 0 ? (row.PresentCount * 100m / totalMemberCount) : 0m;
+                    var collapseId = $"meetingMinutes_{row.Id}";
+                    <tr>
+                        <td class="text-nowrap">@row.MeetingDate.ToString("dd-MMM-yyyy")</td>
+                        <td class="fw-semibold">@row.Title</td>
+                        <td class="text-break">@(string.IsNullOrWhiteSpace(row.Location) ? "-" : row.Location)</td>
+                        <td class="text-break">@(string.IsNullOrWhiteSpace(row.Description) ? "-" : row.Description)</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-info"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#@collapseId"
+                                    aria-expanded="false"
+                                    aria-controls="@collapseId">
+                                View
+                            </button>
+                        </td>
+                        <td class="text-end fw-semibold">@row.PresentCount/@totalMemberCount</td>
+                        <td class="text-end fw-semibold">@percent.ToString("0.##")%</td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-1 flex-wrap justify-content-end">
+                                @if (ViewMenu.Can(ViewData, MenuKeys.Meetings, "Edit"))
+                                {
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="MarkAttendance" asp-route-id="@row.Id">Attendance</a>
+                                }
+                                @if (ViewMenu.Can(ViewData, MenuKeys.Meetings, "Edit"))
+                                {
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@row.Id">Edit</a>
+                                }
+                                @if (ViewMenu.Can(ViewData, MenuKeys.Meetings, "Delete"))
+                                {
+                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@row.Id">Delete</a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="@collapseId"
+                        class="collapse"
+                        data-bs-parent="#meetingMinutesAccordion">
+                        <td colspan="8" class="bg-light">
+                            <div class="p-3">
+                                <div class="fw-semibold text-dark mb-1">Minutes of Meeting</div>
+                                @{
+                                    var minutesHtml = row.MinutesOfMeeting?.Trim();
+                                    var hasMinutes = !string.IsNullOrWhiteSpace(minutesHtml)
+                                        && !string.Equals(minutesHtml, "<p><br></p>", StringComparison.OrdinalIgnoreCase);
+                                }
+                                @if (!hasMinutes)
+                                {
+                                    <div class="small text-muted mb-0">No minutes added for this meeting.</div>
+                                }
+                                else
+                                {
+                                    <div class="small text-body">@Html.Raw(minutesHtml)</div>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
