@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KgmApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e46b0cda916dadf6a11df3f27c4f5dc2a21d3687")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cbbaf5ac58fb5b155d5f3e170e4d6e2bf2353c96")]
 [assembly: System.Reflection.AssemblyProductAttribute("KgmApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KgmApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

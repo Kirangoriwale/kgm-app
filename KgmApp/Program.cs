@@ -65,34 +65,40 @@ namespace KgmApp
 
                 logger.LogInformation("Database: checking connection and migrations…");
 
-                if (!await db.Database.CanConnectAsync())
+                if (await db.Database.CanConnectAsync())
+                {
+                    var pending = (await db.Database.GetPendingMigrationsAsync()).ToList();
+                    if (pending.Count > 0)
+                    {
+                        logger.LogInformation("Applying migrations: {Migrations}", string.Join(", ", pending));
+                    }
+                    else
+                    {
+                        logger.LogInformation("No pending migrations.");
+                    }
+
+                    await db.Database.MigrateAsync();
+                    await RoleMenuPermissionSeeder.SeedAsync(db);
+
+                    var applied = await db.Database.GetAppliedMigrationsAsync();
+                    logger.LogInformation("Applied migrations: {Migrations}", string.Join(", ", applied));
+                }
+                else
                 {
                     var message =
                         "Cannot connect to PostgreSQL. Check ConnectionStrings:DefaultConnection, host/firewall (Supabase: direct db host port 5432), and credentials.";
+
                     if (app.Environment.IsDevelopment())
                     {
-                        logger.LogWarning("{Message} Starting without migrations; Member/DB pages will fail until the database is available.", message);
+                        logger.LogWarning(
+                            "{Message} Starting without migrations; Member/DB pages will fail until the database is available.",
+                            message);
                     }
                     else
                     {
                         logger.LogError(message);
                         throw new InvalidOperationException("Cannot connect to the database. See logs.");
                     }
-                }
-                else
-                {
-                    var pending = (await db.Database.GetPendingMigrationsAsync()).ToList();
-                    if (pending.Count > 0)
-                        logger.LogInformation("Applying migrations: {Migrations}", string.Join(", ", pending));
-                    else
-                        logger.LogInformation("No pending migrations.");
-
-                    await db.Database.MigrateAsync();
-
-                    await RoleMenuPermissionSeeder.SeedAsync(db);
-
-                    var applied = await db.Database.GetAppliedMigrationsAsync();
-                    logger.LogInformation("Applied migrations: {Migrations}", string.Join(", ", applied));
                 }
             }
 

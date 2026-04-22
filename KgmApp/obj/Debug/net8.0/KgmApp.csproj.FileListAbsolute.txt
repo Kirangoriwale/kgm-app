@@ -177,3 +177,4 @@ D:\KIran_Project\Bakup-Copy\KgmApp\KgmApp\bin\Debug\net8.0\ExcelNumberFormat.dll
 D:\KIran_Project\Bakup-Copy\KgmApp\KgmApp\bin\Debug\net8.0\RBush.dll
 D:\KIran_Project\Bakup-Copy\KgmApp\KgmApp\bin\Debug\net8.0\SixLabors.Fonts.dll
 D:\KIran_Project\Bakup-Copy\KgmApp\KgmApp\bin\Debug\net8.0\System.IO.Packaging.dll
+D:\KIran_Project\Bakup-Copy\KgmApp\KgmApp\obj\Debug\net8.0\KgmApp.sourcelink.json
