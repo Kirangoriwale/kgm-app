@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = "Import Transactions";
+    ViewData["PageTitle"] = "Import Transactions";
+    ViewData["BreadcrumbCurrent"] = "Import Transactions";
+}
+
+<div class="d-flex justify-content-end mb-3">
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Back to Transactions
+    </a>
+</div>
+
+@if (TempData["ErrorMessage"] is string errorMessage && !string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-warning" role="alert">
+        @errorMessage
+    </div>
+}
+
+@if (TempData["SuccessMessage"] is string successMessage && !string.IsNullOrWhiteSpace(successMessage))
+{
+    <div class="alert alert-success" role="alert">
+        @successMessage
+    </div>
+}
+
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Excel Import (new transactions only)</h5>
+        <form asp-action="ImportExcel" method="post" enctype="multipart/form-data" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div class="col-12">
+                <label class="form-label">Select Excel file (.xlsx)</label>
+                <input type="file" name="excelFile" class="form-control" accept=".xlsx" required />
+            </div>
+            <div class="col-12">
+                <div class="small text-muted">
+                    <strong>Required columns:</strong> TransactionDate, Category, Amount, PaymentMode<br />
+                    <strong>Optional columns:</strong> MemberId, SubMemberId, DonorName, DonorMobile, Description<br />
+                    This import <strong>only creates new transactions</strong>. It does not update existing records.<br />
+                    For Member/SubMember based categories, provide valid MemberId/SubMemberId values.
+                </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-file-earmark-arrow-up me-1"></i>Import Excel
+                </button>
+                <a asp-action="DownloadImportTemplate" class="btn btn-outline-primary">
+                    <i class="bi bi-download me-1"></i>Download Sample Excel Template
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -332,12 +332,67 @@ namespace KgmApp.Controllers
             return View();
         }
 
-        public IActionResult AboutUs()
+        [HttpGet]
+        public async Task<IActionResult> AboutUs()
         {
             ViewData["Title"] = "About Us";
             ViewData["PageTitle"] = "About Us";
             ViewData["BreadcrumbCurrent"] = "About Us";
-            return View();
+
+            var row = await _db.AboutUsContents
+                .AsNoTracking()
+                .OrderByDescending(x => x.UpdatedAtUtc)
+                .FirstOrDefaultAsync();
+
+            row ??= new AboutUsContent
+            {
+                ContentHtml = DefaultAboutUsHtml
+            };
+
+            return View(row);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveAboutUs([Bind("Id,ContentHtml")] AboutUsContent model)
+        {
+            var html = (model.ContentHtml ?? string.Empty).Trim();
+            if (string.Equals(html, "<p><br></p>", StringComparison.OrdinalIgnoreCase))
+                html = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(html))
+            {
+                ModelState.AddModelError(nameof(AboutUsContent.ContentHtml), "About Us content is required.");
+                ViewData["Title"] = "About Us";
+                ViewData["PageTitle"] = "About Us";
+                ViewData["BreadcrumbCurrent"] = "About Us";
+                model.ContentHtml = html;
+                return View("AboutUs", model);
+            }
+
+            var row = await _db.AboutUsContents
+                .OrderByDescending(x => x.UpdatedAtUtc)
+                .FirstOrDefaultAsync();
+
+            if (row == null)
+            {
+                row = new AboutUsContent
+                {
+                    ContentHtml = html,
+                    UpdatedAtUtc = DateTime.UtcNow
+                };
+                _db.AboutUsContents.Add(row);
+            }
+            else
+            {
+                row.ContentHtml = html;
+                row.UpdatedAtUtc = DateTime.UtcNow;
+            }
+
+            await _db.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "About Us content updated successfully.";
+            return RedirectToAction(nameof(AboutUs));
         }
 
         public async Task<IActionResult> CommitteeMembers()
@@ -381,5 +436,18 @@ namespace KgmApp.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        private const string DefaultAboutUsHtml = """
+<h1>खामगाव ग्रामस्थ मंडळ,मुंबई — परिचय</h1>
+<p>खामगाव ग्रामस्थ मंडळ,मुंबई ही आपल्या गावातील सदस्यांना एकत्र आणणारी एक सामाजिक व सांस्कृतिक संस्था आहे.<br>या मंडळाची स्थापना समाजातील एकोपा, सहकार्य आणि परस्पर संवाद वाढवण्यासाठी करण्यात आली आहे.</p>
+<p>मंडळाच्या माध्यमातून विविध सामाजिक, सांस्कृतिक व विकासात्मक उपक्रम राबविण्यात येतात.<br>सदस्यांच्या सहभागातून समाजात सकारात्मक बदल घडवून आणण्याचा आमचा प्रयत्न असतो.</p>
+<p>नियमित बैठका, कार्यक्रम आणि उपक्रमांद्वारे सर्व सदस्यांना एकत्र येण्याची संधी मिळते.<br>यामुळे समाजात ऐक्य, विश्वास आणि बांधिलकी अधिक दृढ होते.</p>
+<p>मंडळामध्ये पारदर्शकता आणि जबाबदारी यांना विशेष महत्त्व दिले जाते.<br>सदस्यांच्या योगदानातून विविध उपक्रम यशस्वीपणे पार पाडले जातात.</p>
+<p>आर्थिक व्यवहारांची नोंद व्यवस्थित ठेवून सर्वांना स्पष्ट माहिती दिली जाते.<br>यामुळे सदस्यांमध्ये विश्वास आणि समाधान निर्माण होते.</p>
+<p>मंडळाचे उद्दिष्ट केवळ कार्यक्रम आयोजित करणे नसून,<br>समाजातील प्रत्येक सदस्याला जोडून ठेवणे आणि एकमेकांना सहकार्य करणे हे आहे.</p>
+<p>नवीन पिढीला योग्य दिशा देणे आणि समाजात चांगल्या मूल्यांची जपणूक करणे हेही आमचे ध्येय आहे.</p>
+<p>खामगाव ग्रामस्थ मंडळ,मुंबई हे सर्व सदस्यांचे एक कुटुंब आहे,<br>जिथे प्रत्येकाचा सहभाग महत्त्वाचा आहे.</p>
+<p><strong>एकत्र येऊया, एकत्र वाढूया.</strong></p>
+""";
     }
 }

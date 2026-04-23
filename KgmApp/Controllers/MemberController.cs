@@ -21,20 +21,54 @@ public class MemberController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? search, int page = 1)
     {
+        const int pageSize = 10;
+        page = Math.Max(page, 1);
+        search = search?.Trim();
+
         try
         {
-            var members = await _db.Members
-                .AsNoTracking()
+            var query = _db.Members.AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(m =>
+                    (m.Name != null && m.Name.Contains(search)) ||
+                    (m.MobileNo != null && m.MobileNo.Contains(search)) ||
+                    (m.EmailId != null && m.EmailId.Contains(search)) ||
+                    (m.Address != null && m.Address.Contains(search)));
+            }
+
+            var totalItems = await query.CountAsync();
+            var totalPages = Math.Max(1, (int)Math.Ceiling(totalItems / (double)pageSize));
+
+            if (page > totalPages)
+                page = totalPages;
+
+            var members = await query
                 .OrderBy(m => m.Sr)
                 .ThenBy(m => m.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            ViewData["Search"] = search;
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = totalPages;
+            ViewData["PageSize"] = pageSize;
+            ViewData["TotalItems"] = totalItems;
+
             return View(members);
         }
         catch (Exception ex) when (IsDatabaseConnectionFailure(ex))
         {
             ViewData["DatabaseUnavailable"] = true;
+            ViewData["Search"] = search;
+            ViewData["CurrentPage"] = 1;
+            ViewData["TotalPages"] = 1;
+            ViewData["PageSize"] = pageSize;
+            ViewData["TotalItems"] = 0;
             return View(Enumerable.Empty<Member>());
         }
     }

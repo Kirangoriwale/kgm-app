@@ -33,6 +33,7 @@ public class AppDbContext : DbContext
     public DbSet<RoleMenuPermission> RoleMenuPermissions => Set<RoleMenuPermission>();
 
     public DbSet<RulesRegulation> RulesRegulations => Set<RulesRegulation>();
+    public DbSet<AboutUsContent> AboutUsContents => Set<AboutUsContent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -160,6 +161,13 @@ public class AppDbContext : DbContext
         });
 
         modelBuilder.Entity<RulesRegulation>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ContentHtml).IsRequired();
+            entity.Property(e => e.UpdatedAtUtc).IsRequired();
+        });
+
+        modelBuilder.Entity<AboutUsContent>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.ContentHtml).IsRequired();

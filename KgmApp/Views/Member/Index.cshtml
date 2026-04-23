@@ -4,20 +4,44 @@
     ViewData["PageTitle"] = "Members";
     ViewData["BreadcrumbCurrent"] = "Members";
     var databaseUnavailable = (ViewData["DatabaseUnavailable"] as bool?) ?? false;
+    var search = (ViewData["Search"] as string) ?? string.Empty;
+    var currentPage = (ViewData["CurrentPage"] as int?) ?? 1;
+    var totalPages = (ViewData["TotalPages"] as int?) ?? 1;
+    var totalItems = (ViewData["TotalItems"] as int?) ?? 0;
 }
 
-<div class="page-actions d-flex justify-content-end gap-2 mb-4 flex-wrap">
-    @if (ViewMenu.Can(ViewData, MenuKeys.Members, "Add"))
-    {
-        <a class="btn btn-outline-primary rounded-3 d-inline-flex align-items-center justify-content-center gap-2" asp-action="ImportExcel">
-            <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i>
-            Excel Import
-        </a>
-        <a class="btn btn-primary rounded-3 d-inline-flex align-items-center justify-content-center gap-2" asp-action="Create">
-            <i class="bi bi-person-plus" aria-hidden="true"></i>
-            Create Member
-        </a>
-    }
+<div class="d-flex justify-content-between align-items-center gap-2 mb-3 flex-wrap">
+    <form asp-action="Index" method="get" class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="input-group" style="min-width: 18rem;">
+            <span class="input-group-text">
+                <i class="bi bi-search" aria-hidden="true"></i>
+            </span>
+            <input type="search"
+                   name="search"
+                   value="@search"
+                   class="form-control"
+                   placeholder="Search name, mobile, email, address" />
+        </div>
+        <button type="submit" class="btn btn-outline-secondary">Search</button>
+        @if (!string.IsNullOrWhiteSpace(search))
+        {
+            <a asp-action="Index" class="btn btn-link text-decoration-none px-0">Clear</a>
+        }
+    </form>
+
+    <div class="page-actions d-flex justify-content-end gap-2 flex-wrap">
+        @if (ViewMenu.Can(ViewData, MenuKeys.Members, "Add"))
+        {
+            <a class="btn btn-outline-primary rounded-3 d-inline-flex align-items-center justify-content-center gap-2" asp-action="ImportExcel">
+                <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i>
+                Excel Import
+            </a>
+            <a class="btn btn-primary rounded-3 d-inline-flex align-items-center justify-content-center gap-2" asp-action="Create">
+                <i class="bi bi-person-plus" aria-hidden="true"></i>
+                Create Member
+            </a>
+        }
+    </div>
 </div>
 
 @if (databaseUnavailable)
@@ -43,7 +67,14 @@
     <div class="card border-0 shadow-sm rounded-3">
         <div class="card-body text-center py-5 text-muted">
             <i class="bi bi-inbox display-6 d-block mb-3" aria-hidden="true"></i>
-            <p class="mb-0">No members yet. Use <strong>Create Member</strong> to add one.</p>
+            @if (!string.IsNullOrWhiteSpace(search))
+            {
+                <p class="mb-0">No members found for <strong>@search</strong>.</p>
+            }
+            else
+            {
+                <p class="mb-0">No members yet. Use <strong>Create Member</strong> to add one.</p>
+            }
         </div>
     </div>
 }
@@ -102,6 +133,34 @@ else
                 }
                 </tbody>
             </table>
+        </div>
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <small class="text-muted">Showing page @currentPage of @totalPages (@totalItems total members)</small>
+            <nav aria-label="Members pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item @(currentPage <= 1 ? "disabled" : string.Empty)">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-search="@search"
+                           asp-route-page="@(currentPage - 1)">Previous</a>
+                    </li>
+                    @for (var p = 1; p <= totalPages; p++)
+                    {
+                        <li class="page-item @(p == currentPage ? "active" : string.Empty)">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-search="@search"
+                               asp-route-page="@p">@p</a>
+                        </li>
+                    }
+                    <li class="page-item @(currentPage >= totalPages ? "disabled" : string.Empty)">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-search="@search"
+                           asp-route-page="@(currentPage + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 }

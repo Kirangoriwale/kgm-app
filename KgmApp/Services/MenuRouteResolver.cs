@@ -42,6 +42,8 @@ public static class MenuRouteResolver
                 return new Resolved(MenuKeys.HomeDashboard, PermissionKind.View);
             if (string.Equals(a, "AboutUs", StringComparison.OrdinalIgnoreCase))
                 return new Resolved(MenuKeys.AboutUs, PermissionKind.View);
+            if (string.Equals(a, "SaveAboutUs", StringComparison.OrdinalIgnoreCase))
+                return new Resolved(MenuKeys.AboutUs, PermissionKind.Edit);
             if (string.Equals(a, "CommitteeMembers", StringComparison.OrdinalIgnoreCase))
                 return new Resolved(MenuKeys.CommitteeMembers, PermissionKind.View);
             if (string.Equals(a, "MyDashboard", StringComparison.OrdinalIgnoreCase) ||
@@ -83,7 +85,7 @@ public static class MenuRouteResolver
             return a switch
             {
                 "Index" => new Resolved(MenuKeys.Transactions, PermissionKind.View),
-                "Create" => new Resolved(MenuKeys.Transactions, PermissionKind.Add),
+                "Create" or "ImportExcel" or "DownloadImportTemplate" => new Resolved(MenuKeys.Transactions, PermissionKind.Add),
                 "Edit" => new Resolved(MenuKeys.Transactions, PermissionKind.Edit),
                 "Delete" or "DeleteConfirmed" => new Resolved(MenuKeys.Transactions, PermissionKind.Delete),
                 _ => new Resolved(MenuKeys.Transactions, PermissionKind.View)

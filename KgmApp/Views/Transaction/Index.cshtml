@@ -64,10 +64,16 @@
 
     @if (ViewMenu.Can(ViewData, MenuKeys.Transactions, "Add"))
     {
-        <a class="btn btn-primary d-inline-flex align-items-center gap-2 text-nowrap" asp-action="Create">
-            <i class="bi bi-plus-circle"></i>
-            Add Transaction
-        </a>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-primary d-inline-flex align-items-center gap-2 text-nowrap" asp-action="ImportExcel">
+                <i class="bi bi-file-earmark-arrow-up"></i>
+                Excel Import
+            </a>
+            <a class="btn btn-primary d-inline-flex align-items-center gap-2 text-nowrap" asp-action="Create">
+                <i class="bi bi-plus-circle"></i>
+                Add Transaction
+            </a>
+        </div>
     }
 </div>
 

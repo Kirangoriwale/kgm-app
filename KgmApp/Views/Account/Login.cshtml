@@ -35,16 +35,15 @@
             padding: 2rem 1.5rem;
         }
 
-        .auth-logo {
-            max-width: 108px;
-            height: auto;
-            filter: drop-shadow(0 0.3rem 0.8rem rgba(37, 99, 235, 0.18));
-        }
-
         .auth-title {
             font-weight: 700;
-            letter-spacing: 0.01em;
+            font-family: "Noto Sans Devanagari", "Mangal", "Nirmala UI", "Segoe UI", sans-serif;
+            letter-spacing: 0.015em;
+            line-height: 1.35;
+            font-size: 1.35rem;
             color: #0f172a;
+            text-wrap: balance;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
         }
 
         .auth-subtitle {
@@ -124,6 +123,10 @@
             .auth-card-body {
                 padding: 2.25rem;
             }
+
+            .auth-title {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -133,9 +136,6 @@
             <div class="card auth-card">
                 <div class="card-body auth-card-body">
                     <div class="text-center mb-4">
-                        <img src="~/Images/logo.png"
-                             alt="Khamgaon logo"
-                             class="img-fluid auth-logo mb-3" />
                         <h1 class="h4 auth-title mb-1">खामगांव ग्रामस्थ मंडळ, मुंबई</h1>
                         <p class="auth-subtitle mb-0 small">Sign in to continue</p>
                     </div>
