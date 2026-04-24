@@ -35,6 +35,14 @@ public class TransactionController : Controller
 
     public async Task<IActionResult> Index(DateTime? fromDate, DateTime? toDate, string? paymentMode, string? category)
     {
+        // Default listing should show only today's transactions.
+        if (!fromDate.HasValue && !toDate.HasValue)
+        {
+            var today = DateTime.Today;
+            fromDate = today;
+            toDate = today;
+        }
+
         var query = _db.Transactions
             .AsNoTracking()
             .Include(t => t.Member)

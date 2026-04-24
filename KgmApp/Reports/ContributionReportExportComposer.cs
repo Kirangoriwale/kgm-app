@@ -51,7 +51,9 @@ public static class ContributionReportExportComposer
                 page.Size(PageSizes.A4.Landscape());
                 page.Margin(20);
                 page.PageColor(Colors.White);
-                page.DefaultTextStyle(x => x.FontSize(8));
+                page.DefaultTextStyle(x => x
+                    .FontFamily(ReportFontDefaults.Families)
+                    .FontSize(8));
 
                 page.Header().Column(col =>
                 {

@@ -354,6 +354,15 @@ public sealed class ReportController : Controller
         return File(bytes, "application/pdf", fileName);
     }
 
+    public async Task<IActionResult> StatementJpg(DateTime? fromDate, DateTime? toDate)
+    {
+        var (from, to) = NormalizeStatementDates(fromDate, toDate);
+        var vm = await BuildStatementModelAsync(from, to);
+        var bytes = StatementPdfComposer.GenerateJpg(vm);
+        var fileName = $"Statement_{from:yyyyMMdd}_{to:yyyyMMdd}.jpg";
+        return File(bytes, "image/jpeg", fileName);
+    }
+
     private static (DateTime From, DateTime To) NormalizeStatementDates(DateTime? fromDate, DateTime? toDate)
     {
         var today = DateTime.Today;
@@ -456,35 +465,42 @@ public sealed class ReportController : Controller
     private static List<StatementLine> BuildStatementLines(IReadOnlyList<Transaction> transactions)
     {
         var lines = new List<StatementLine>();
-        foreach (var catGroup in transactions.GroupBy(t => t.Category).OrderBy(g => g.Key))
-        {
-            if (StatementHeadsWithoutLineDescriptions.Contains(catGroup.Key))
-            {
-                lines.Add(new StatementLine
-                {
-                    Head = catGroup.Key,
-                    Amount = catGroup.Sum(t => t.Amount),
-                    ShowDescription = false,
-                    Description = null
-                });
-            }
-            else
-            {
-                foreach (var t in catGroup.OrderBy(x => x.TransactionDate).ThenBy(x => x.Id))
-                {
-                    var desc = t.Description?.Trim();
-                    lines.Add(new StatementLine
-                    {
-                        Head = t.Category,
-                        Amount = t.Amount,
-                        ShowDescription = true,
-                        Description = string.IsNullOrEmpty(desc) ? null : desc
-                    });
-                }
-            }
-        }
 
-        return lines;
+        var aggregateLines = transactions
+            .Where(t => StatementHeadsWithoutLineDescriptions.Contains(t.Category))
+            .GroupBy(t => t.Category)
+            .Select(catGroup => new StatementLine
+            {
+                Head = catGroup.Key,
+                TransactionDate = null,
+                Amount = catGroup.Sum(t => t.Amount),
+                ShowDescription = false,
+                Description = null
+            });
+
+        var detailedLines = transactions
+            .Where(t => !StatementHeadsWithoutLineDescriptions.Contains(t.Category))
+            .Select(t =>
+            {
+                var desc = t.Description?.Trim();
+                return new StatementLine
+                {
+                    Head = t.Category,
+                    TransactionDate = t.TransactionDate,
+                    Amount = t.Amount,
+                    ShowDescription = true,
+                    Description = string.IsNullOrEmpty(desc) ? null : desc
+                };
+            });
+
+        lines.AddRange(detailedLines);
+        lines.AddRange(aggregateLines);
+
+        return lines
+            .OrderBy(x => x.TransactionDate.HasValue ? 0 : 1)
+            .ThenBy(x => x.TransactionDate)
+            .ThenBy(x => x.Head)
+            .ToList();
     }
 
     /// <summary>

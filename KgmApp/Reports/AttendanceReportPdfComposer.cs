@@ -20,7 +20,10 @@ public static class AttendanceReportPdfComposer
                 page.Size(PageSizes.A4.Landscape());
                 page.Margin(18);
                 page.PageColor(Colors.White);
-                page.DefaultTextStyle(x => x.FontSize(8.5f).FontColor(Color.FromHex("#1f2937")));
+                page.DefaultTextStyle(x => x
+                    .FontFamily(ReportFontDefaults.Families)
+                    .FontSize(8.5f)
+                    .FontColor(Color.FromHex("#1f2937")));
 
                 page.Header().Column(col =>
                 {

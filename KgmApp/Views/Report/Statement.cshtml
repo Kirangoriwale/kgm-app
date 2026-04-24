@@ -30,6 +30,15 @@
                     <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i>
                     Download PDF
                 </a>
+                <a class="btn btn-outline-secondary d-inline-flex align-items-center gap-2"
+                   asp-controller="Report"
+                   asp-action="StatementJpg"
+                   asp-route-fromDate="@fromDate"
+                   asp-route-toDate="@toDate"
+                   title="Download Image for the selected date range">
+                    <i class="bi bi-file-earmark-image" aria-hidden="true"></i>
+                    Download Image
+                </a>
             </div>
         </div>
     </form>
@@ -78,6 +87,7 @@
             <thead class="table-light">
                 <tr>
                     <th>Head (category)</th>
+                    <th>Transaction Date</th>
                     <th>Description</th>
                     <th class="text-end">Amount</th>
                 </tr>
@@ -86,7 +96,7 @@
             @if (Model.IncomeLines.Count == 0)
             {
                 <tr>
-                    <td colspan="3" class="text-muted text-center py-4">No income in this period.</td>
+                    <td colspan="4" class="text-muted text-center py-4">No income in this period.</td>
                 </tr>
             }
             else
@@ -95,6 +105,9 @@
                 {
                     <tr>
                         <td class="text-nowrap">@row.Head</td>
+                        <td class="text-nowrap">
+                            @(row.TransactionDate.HasValue ? row.TransactionDate.Value.ToString("dd-MMM-yyyy") : "—")
+                        </td>
                         <td class="text-break" style="min-width: 12rem; max-width: 28rem;">
                             @if (row.ShowDescription)
                             {
@@ -109,7 +122,7 @@
                     </tr>
                 }
                 <tr class="table-light">
-                    <td colspan="2" class="fw-bold">Total income</td>
+                    <td colspan="3" class="fw-bold">Total income</td>
                     <td class="text-end fw-bold">@Model.TotalIncomeInPeriod.ToString("N2")</td>
                 </tr>
             }
@@ -128,6 +141,7 @@
             <thead class="table-light">
                 <tr>
                     <th>Head (category)</th>
+                    <th>Transaction Date</th>
                     <th>Description</th>
                     <th class="text-end">Amount</th>
                 </tr>
@@ -136,7 +150,7 @@
             @if (Model.ExpenseLines.Count == 0)
             {
                 <tr>
-                    <td colspan="3" class="text-muted text-center py-4">No expenses in this period.</td>
+                    <td colspan="4" class="text-muted text-center py-4">No expenses in this period.</td>
                 </tr>
             }
             else
@@ -145,6 +159,9 @@
                 {
                     <tr>
                         <td class="text-nowrap">@row.Head</td>
+                        <td class="text-nowrap">
+                            @(row.TransactionDate.HasValue ? row.TransactionDate.Value.ToString("dd-MMM-yyyy") : "—")
+                        </td>
                         <td class="text-break" style="min-width: 12rem; max-width: 28rem;">
                             @if (row.ShowDescription)
                             {
@@ -159,7 +176,7 @@
                     </tr>
                 }
                 <tr class="table-light">
-                    <td colspan="2" class="fw-bold">Total expenses</td>
+                    <td colspan="3" class="fw-bold">Total expenses</td>
                     <td class="text-end fw-bold">@Model.TotalExpenseInPeriod.ToString("N2")</td>
                 </tr>
             }

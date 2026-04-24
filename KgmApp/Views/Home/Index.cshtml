@@ -46,28 +46,28 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-6 col-xl-4">
-        <div class="card dashboard-stat-card dashboard-stat-card--cash shadow-sm rounded-3 h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="dashboard-stat-icon rounded-3" aria-hidden="true">
-                    <i class="bi bi-cash-coin fs-3"></i>
-                </div>
-                <div>
-                    <div class="text-muted small text-uppercase fw-semibold">Cash in Hand</div>
-                    <div class="h3 fw-semibold text-dark lh-1 mb-0">@Model.CashInHand.ToString("0.00")</div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-md-6 col-xl-4">
+    <div class="col-12 col-md-6 col-xl-8">
         <div class="card dashboard-stat-card dashboard-stat-card--bank shadow-sm rounded-3 h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
+            <div class="card-body d-flex align-items-start gap-3 p-4">
                 <div class="dashboard-stat-icon rounded-3" aria-hidden="true">
-                    <i class="bi bi-bank fs-3"></i>
+                    <i class="bi bi-wallet2 fs-3"></i>
                 </div>
-                <div>
-                    <div class="text-muted small text-uppercase fw-semibold">Bank Balance</div>
-                    <div class="h3 fw-semibold text-dark lh-1 mb-0">@Model.BankBalance.ToString("0.00")</div>
+                <div class="w-100">
+                    <div class="text-muted small text-uppercase fw-semibold mb-2">Balances</div>
+                    <div class="d-flex flex-column gap-1">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Cash in Hand</span>
+                            <span class="fw-semibold text-dark">@Model.CashInHand.ToString("0.00")</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Bank Balance</span>
+                            <span class="fw-semibold text-dark">@Model.BankBalance.ToString("0.00")</span>
+                        </div>
+                        <div class="d-flex justify-content-between border-top pt-2 mt-1">
+                            <span class="fw-semibold">Total Balance</span>
+                            <span class="h5 fw-bold text-dark mb-0">@((Model.CashInHand + Model.BankBalance).ToString("0.00"))</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

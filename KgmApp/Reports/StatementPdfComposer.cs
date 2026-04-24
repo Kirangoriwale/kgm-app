@@ -2,11 +2,26 @@ using KgmApp.Models.Reports;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using ImageSharpImage = SixLabors.ImageSharp.Image;
 
 namespace KgmApp.Reports;
 
 public static class StatementPdfComposer
 {
+    public static byte[] GenerateJpg(StatementReportViewModel vm)
+    {
+        var images = BuildDocument(vm).GenerateImages();
+        var firstImage = images.FirstOrDefault();
+        if (firstImage is null)
+            throw new InvalidOperationException("Unable to generate statement image.");
+
+        using var image = ImageSharpImage.Load(firstImage);
+        using var ms = new MemoryStream();
+        image.Save(ms, new JpegEncoder { Quality = 90 });
+        return ms.ToArray();
+    }
+
     private static class Theme
     {
         public static readonly Color Navy = Color.FromHex("#1e3a5f");
@@ -35,6 +50,11 @@ public static class StatementPdfComposer
 
     public static byte[] Generate(StatementReportViewModel vm)
     {
+        return BuildDocument(vm).GeneratePdf();
+    }
+
+    private static IDocument BuildDocument(StatementReportViewModel vm)
+    {
         return Document.Create(container =>
         {
             container.Page(page =>
@@ -42,7 +62,10 @@ public static class StatementPdfComposer
                 page.Size(PageSizes.A4);
                 page.Margin(32);
                 page.PageColor(Theme.PageBg);
-                page.DefaultTextStyle(x => x.FontSize(9).FontColor(Color.FromHex("#334155")));
+                page.DefaultTextStyle(x => x
+                    .FontFamily(ReportFontDefaults.Families)
+                    .FontSize(9)
+                    .FontColor(Color.FromHex("#334155")));
 
                 page.Header().Element(c => RenderPageHeader(c, vm));
 
@@ -84,7 +107,7 @@ public static class StatementPdfComposer
 
                 page.Footer().Element(RenderFooter);
             });
-        }).GeneratePdf();
+        });
     }
 
     private static void RenderPageHeader(IContainer container, StatementReportViewModel vm)
@@ -184,7 +207,8 @@ public static class StatementPdfComposer
         {
             table.ColumnsDefinition(cols =>
             {
-                cols.RelativeColumn(2f);
+                cols.RelativeColumn(1.8f);
+                cols.RelativeColumn(1.2f);
                 cols.RelativeColumn(3f);
                 cols.RelativeColumn(1.2f);
             });
@@ -196,6 +220,7 @@ public static class StatementPdfComposer
                     c.Background(bg).PaddingVertical(4).PaddingHorizontal(5);
 
                 header.Cell().Element(c => HeaderCell(c, headerColor)).Text("Head (category)").FontColor(Colors.White).SemiBold().FontSize(8.5f);
+                header.Cell().Element(c => HeaderCell(c, headerColor)).Text("Transaction Date").FontColor(Colors.White).SemiBold().FontSize(8.5f);
                 header.Cell().Element(c => HeaderCell(c, headerColor)).Text("Description").FontColor(Colors.White).SemiBold().FontSize(8.5f);
                 header.Cell().Element(c => HeaderCell(c, headerColor)).AlignRight().Text("Amount").FontColor(Colors.White).SemiBold().FontSize(8.5f);
             });
@@ -215,19 +240,22 @@ public static class StatementPdfComposer
                     c.Background(bg).PaddingVertical(3).PaddingHorizontal(5);
 
                 table.Cell().Element(c => BodyCell(c, rowBg)).Text(line.Head).FontSize(8.5f);
+                table.Cell().Element(c => BodyCell(c, rowBg)).Text(line.TransactionDate.HasValue ? line.TransactionDate.Value.ToString("dd-MMM-yyyy") : "—").FontSize(8f).FontColor(line.TransactionDate.HasValue ? Color.FromHex("#334155") : Theme.Muted);
                 table.Cell().Element(c => BodyCell(c, rowBg)).Text(desc).FontSize(8f).FontColor(line.ShowDescription && !string.IsNullOrEmpty(line.Description) ? Color.FromHex("#475569") : Theme.Muted);
                 table.Cell().Element(c => BodyCell(c, rowBg)).AlignRight().Text(line.Amount.ToString("N2")).SemiBold().FontSize(8.5f);
             }
 
-            table.Footer(footer =>
-            {
-                // Thin, light separator above totals (not a thick accent bar).
-                IContainer TotalCell(IContainer c) =>
-                    c.Background(Color.FromHex("#f8fafc")).PaddingVertical(4).PaddingHorizontal(5).BorderTop(0.5f).BorderColor(Theme.RuleLight);
+            // Add total as a normal final row (not table footer), so it is rendered only once
+            // immediately after the last record rather than repeated at page end.
+            IContainer TotalCell(IContainer c) =>
+                c.Background(Color.FromHex("#f8fafc"))
+                    .PaddingVertical(4)
+                    .PaddingHorizontal(5)
+                    .BorderTop(0.5f)
+                    .BorderColor(Theme.RuleLight);
 
-                footer.Cell().ColumnSpan(2).Element(TotalCell).Text(totalLabel).Bold().FontSize(9).FontColor(Color.FromHex("#0f172a"));
-                footer.Cell().Element(TotalCell).AlignRight().Text(total.ToString("N2")).Bold().FontSize(9).FontColor(headerColor);
-            });
+            table.Cell().ColumnSpan(3).Element(TotalCell).Text(totalLabel).Bold().FontSize(9).FontColor(Color.FromHex("#0f172a"));
+            table.Cell().Element(TotalCell).AlignRight().Text(total.ToString("N2")).Bold().FontSize(9).FontColor(headerColor);
         });
     }
 

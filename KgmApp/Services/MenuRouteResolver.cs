@@ -132,7 +132,7 @@ public static class MenuRouteResolver
             var mk = a switch
             {
                 "ContributionReport" or "ContributionReportPdf" or "ContributionReportJpg" => MenuKeys.ReportContribution,
-                "Statement" or "StatementPdf" => MenuKeys.ReportStatement,
+                "Statement" or "StatementPdf" or "StatementJpg" => MenuKeys.ReportStatement,
                 "AttendanceReport" or "AttendanceReportPdf" => MenuKeys.ReportAttendance,
                 "CommitteeAttendanceReport" or "CommitteeAttendanceReportPdf" => MenuKeys.ReportCommitteeAttendance,
                 _ => MenuKeys.ReportContribution

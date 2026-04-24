@@ -40,6 +40,8 @@ public sealed class StatementLine
 {
     public required string Head { get; init; }
 
+    public DateTime? TransactionDate { get; init; }
+
     public required decimal Amount { get; init; }
 
     /// <summary>When false, description is not shown (head is one aggregate line).</summary>
