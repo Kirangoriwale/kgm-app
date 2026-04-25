@@ -5,6 +5,7 @@ using KgmApp.Models.Meetings;
 using KgmApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace KgmApp.Controllers
@@ -15,17 +16,20 @@ namespace KgmApp.Controllers
         private readonly AppDbContext _db;
         private readonly MemberContributionSummaryService _memberContribution;
         private readonly MemberUpiPaymentOptions _upiPayment;
+        private readonly IConfiguration _configuration;
 
         public HomeController(
             ILogger<HomeController> logger,
             AppDbContext db,
             MemberContributionSummaryService memberContribution,
-            IOptions<MemberUpiPaymentOptions> upiPayment)
+            IOptions<MemberUpiPaymentOptions> upiPayment,
+            IConfiguration configuration)
         {
             _logger = logger;
             _db = db;
             _memberContribution = memberContribution;
             _upiPayment = upiPayment.Value;
+            _configuration = configuration;
         }
 
         public async Task<IActionResult> Index()
@@ -402,6 +406,7 @@ namespace KgmApp.Controllers
                 .Where(m => m.IsCommiteeMember && m.IsActive)
                 .Select(m => new CommitteeMemberCardViewModel
                 {
+                    MemberId = m.Id,
                     Name = m.Name,
                     Designation = string.IsNullOrWhiteSpace(m.Designation) ? "Committee Member" : m.Designation,
                     MobileNo = m.MobileNo
@@ -410,6 +415,17 @@ namespace KgmApp.Controllers
 
             var designationPriority = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
             {
+                // Marathi committee order
+                ["अध्यक्ष"] = 1,
+                ["उपाध्यक्ष"] = 2,
+                ["सचिव"] = 3,
+                ["उपसचिव"] = 4,
+                ["खजिनदार"] = 5,
+                ["उपखजिनदार"] = 6,
+                ["सल्लागार"] = 7,
+                ["सदस्य"] = 8,
+
+                // English aliases (for backward compatibility)
                 ["Chairman"] = 1,
                 ["Vice Chairman"] = 2,
                 ["Secretary"] = 3,
@@ -421,13 +437,36 @@ namespace KgmApp.Controllers
             };
 
             rows = rows
-                .OrderBy(x => designationPriority.TryGetValue(x.Designation, out var rank) ? rank : int.MaxValue)
+                .OrderBy(x => designationPriority.TryGetValue(x.Designation.Trim(), out var rank) ? rank : int.MaxValue)
                 .ThenBy(x => x.Name)
                 .ToList();
 
             ViewData["Title"] = "Committee Members";
             ViewData["PageTitle"] = "Committee Members";
             ViewData["BreadcrumbCurrent"] = "Committee Members";
+            var supabaseProjectUrl =
+                _configuration["Supabase:ProjectUrl"]
+                ?? _configuration["SUPABASE_URL"]
+                ?? Environment.GetEnvironmentVariable("SUPABASE_URL");
+            if (!string.IsNullOrWhiteSpace(supabaseProjectUrl))
+            {
+                var photoBucket = _configuration["Supabase:MemberPhotosBucket"];
+                if (string.IsNullOrWhiteSpace(photoBucket))
+                {
+                    photoBucket = "member-photos";
+                }
+
+                var photoFolder = _configuration["Supabase:MemberPhotosFolder"]?.Trim().Trim('/');
+                var baseUrl = $"{supabaseProjectUrl.TrimEnd('/')}/storage/v1/object/public/{photoBucket}";
+                if (!string.IsNullOrWhiteSpace(photoFolder))
+                {
+                    baseUrl = $"{baseUrl}/{photoFolder}";
+                }
+
+                ViewData["CommitteeMemberPhotoBaseUrl"] = baseUrl;
+                ViewData["CommitteeMemberPhotoAltBaseUrl"] = $"{supabaseProjectUrl.TrimEnd('/')}/storage/files/buckets/{photoBucket}";
+            }
+
             return View(rows);
         }
 
