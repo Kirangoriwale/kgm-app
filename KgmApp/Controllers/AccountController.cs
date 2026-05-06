@@ -344,6 +344,7 @@ public class AccountController : Controller
         member.AadhaarNo = model.AadhaarNo;
         member.Education = model.Education;
         member.BusinessOrJob = model.BusinessOrJob;
+        member.Terms = termsHtml?.Trim();
         member.TermsAcceptYN = model.TermsAcceptYN;
         member.IsRegistrationFormSubmitted = true;
 
