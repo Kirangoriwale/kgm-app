@@ -50,6 +50,11 @@ public static class DatabaseConnectionHelper
             if (string.IsNullOrWhiteSpace(csb.Host))
                 return connectionString;
 
+            // Supabase uses host-based routing for multi-tenant Postgres endpoints.
+            // Replacing host with a raw IP breaks tenant resolution (e.g. "tenant/user not found").
+            if (IsSupabaseHost(csb.Host))
+                return connectionString;
+
             if (IPAddress.TryParse(csb.Host, out _))
                 return connectionString;
 
@@ -77,6 +82,12 @@ public static class DatabaseConnectionHelper
         {
             return connectionString;
         }
+    }
+
+    private static bool IsSupabaseHost(string host)
+    {
+        return host.EndsWith(".supabase.com", StringComparison.OrdinalIgnoreCase)
+            || host.EndsWith(".supabase.co", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>

@@ -29,6 +29,28 @@ public class Member
     [Display(Name = "Address")]
     public string Address { get; set; } = string.Empty;
 
+    [Display(Name = "Date of Birth")]
+    [DataType(DataType.Date)]
+    public DateTime? DateOfBirth { get; set; }
+
+    [StringLength(12)]
+    [Display(Name = "Aadhaar No")]
+    public string? AadhaarNo { get; set; }
+
+    [StringLength(256)]
+    [Display(Name = "Education")]
+    public string? Education { get; set; }
+
+    [StringLength(256)]
+    [Display(Name = "Business/Job")]
+    public string? BusinessOrJob { get; set; }
+
+    [Display(Name = "Terms")]
+    public string? Terms { get; set; }
+
+    [Display(Name = "Terms Accept Y/N")]
+    public bool? TermsAcceptYN { get; set; }
+
     [Display(Name = "Active")]
     public bool IsActive { get; set; }
 

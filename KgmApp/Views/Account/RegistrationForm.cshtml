@@ -1,0 +1,121 @@
+@model KgmApp.Models.MemberRegistrationFormViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = "Registration Form";
+    var registrationTermsHtml = ViewData["RegistrationTermsHtml"] as string;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registration Form - Khamgaon</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" crossorigin="anonymous" />
+</head>
+<body class="bg-light">
+    <div class="container py-4 py-md-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h1 class="h4 mb-1">Registration Form</h1>
+                        <p class="text-muted mb-4">Complete your registration details to continue to dashboard.</p>
+
+                        @if (TempData["ErrorMessage"] is string errorMessage && !string.IsNullOrWhiteSpace(errorMessage))
+                        {
+                            <div class="alert alert-warning" role="alert">@errorMessage</div>
+                        }
+
+                        <form asp-action="RegistrationForm" method="post" novalidate>
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="Name" class="form-label"></label>
+                                <input asp-for="Name" class="form-control" readonly />
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="MobileNo" class="form-label"></label>
+                                <input asp-for="MobileNo" class="form-control" readonly />
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="EmailId" class="form-label"></label>
+                                <input asp-for="EmailId" class="form-control" inputmode="email" autocomplete="email" />
+                                <span asp-validation-for="EmailId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Address" class="form-label"></label>
+                                <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Address" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="DateOfBirth" class="form-label"></label>
+                                <input asp-for="DateOfBirth" class="form-control" type="date" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="AadhaarNo" class="form-label"></label>
+                                <input asp-for="AadhaarNo" class="form-control" maxlength="12" inputmode="numeric" />
+                                <span asp-validation-for="AadhaarNo" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Education" class="form-label"></label>
+                                <input asp-for="Education" class="form-control" />
+                                <span asp-validation-for="Education" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="BusinessOrJob" class="form-label"></label>
+                                <input asp-for="BusinessOrJob" class="form-control" />
+                                <span asp-validation-for="BusinessOrJob" class="text-danger small"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Terms" class="form-label"></label>
+                                <div class="border rounded bg-white p-3" style="max-height: 220px; overflow: auto;">
+                                    @if (!string.IsNullOrWhiteSpace(registrationTermsHtml))
+                                    {
+                                        @Html.Raw(registrationTermsHtml)
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Terms will be added soon.</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="form-check form-switch mb-4">
+                                @if (Model.TermsAcceptYN)
+                                {
+                                    <input id="TermsAcceptYN" name="TermsAcceptYN" type="checkbox" class="form-check-input" role="switch" value="true" checked />
+                                }
+                                else
+                                {
+                                    <input id="TermsAcceptYN" name="TermsAcceptYN" type="checkbox" class="form-check-input" role="switch" value="true" />
+                                }
+                                <label for="TermsAcceptYN" class="form-check-label">I have read and accept the Rules & Regulations.</label>
+                                <span asp-validation-for="TermsAcceptYN" class="text-danger small d-block"></span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1" aria-hidden="true"></i>
+                                Submit Registration
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+</body>
+</html>

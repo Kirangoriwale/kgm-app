@@ -33,6 +33,42 @@
 </div>
 
 <div class="mb-3">
+    <label asp-for="DateOfBirth" class="form-label"></label>
+    <input asp-for="DateOfBirth" class="form-control" type="date" />
+    <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="AadhaarNo" class="form-label"></label>
+    <input asp-for="AadhaarNo" class="form-control" inputmode="numeric" maxlength="12" />
+    <span asp-validation-for="AadhaarNo" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Education" class="form-label"></label>
+    <input asp-for="Education" class="form-control" />
+    <span asp-validation-for="Education" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="BusinessOrJob" class="form-label"></label>
+    <input asp-for="BusinessOrJob" class="form-control" />
+    <span asp-validation-for="BusinessOrJob" class="text-danger small"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Terms" class="form-label"></label>
+    <input asp-for="Terms" class="form-control" />
+    <span asp-validation-for="Terms" class="text-danger small"></span>
+</div>
+
+<div class="form-check form-switch mb-2">
+    <input asp-for="TermsAcceptYN" class="form-check-input" role="switch" />
+    <label asp-for="TermsAcceptYN" class="form-check-label"></label>
+    <span asp-validation-for="TermsAcceptYN" class="text-danger small d-block"></span>
+</div>
+
+<div class="mb-3">
     <label asp-for="Designation" class="form-label"></label>
     <input asp-for="Designation" class="form-control" />
     <span asp-validation-for="Designation" class="text-danger small"></span>

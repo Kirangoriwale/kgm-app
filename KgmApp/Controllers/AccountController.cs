@@ -20,13 +20,21 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Login()
+    public async Task<IActionResult> Login()
     {
         if (!string.IsNullOrWhiteSpace(HttpContext.Session.GetString(SessionKeyUsername)))
         {
             if (string.Equals(HttpContext.Session.GetString(SessionKeyMustChangePassword), "true", StringComparison.OrdinalIgnoreCase))
                 return RedirectToAction(nameof(ChangePassword));
-            return RedirectToHomeForRole(HttpContext.Session.GetString(SessionKeyRole));
+
+            var currentMember = await GetCurrentSessionMemberAsync();
+            if (currentMember == null)
+            {
+                HttpContext.Session.Clear();
+                return View(new LoginViewModel());
+            }
+
+            return RedirectToPostLoginDestination(currentMember);
         }
 
         return View(new LoginViewModel());
@@ -91,7 +99,7 @@ public class AccountController : Controller
         if (member.IsFirstLogin)
             return RedirectToAction(nameof(ChangePassword));
 
-        return RedirectToHomeForRole(member.Role);
+        return RedirectToPostLoginDestination(member);
     }
 
     [HttpGet]
@@ -101,7 +109,16 @@ public class AccountController : Controller
             return RedirectToAction(nameof(Login));
 
         if (string.IsNullOrWhiteSpace(HttpContext.Session.GetString(SessionKeyMustChangePassword)))
-            return RedirectToHomeForRole(HttpContext.Session.GetString(SessionKeyRole));
+        {
+            var member = await GetCurrentSessionMemberAsync();
+            if (member == null)
+            {
+                HttpContext.Session.Clear();
+                return RedirectToAction(nameof(Login));
+            }
+
+            return RedirectToPostLoginDestination(member);
+        }
 
         if (!await MemberAllowsLoginAsync())
         {
@@ -174,7 +191,7 @@ public class AccountController : Controller
         HttpContext.Session.Remove(SessionKeyMustChangePassword);
 
         TempData["SuccessMessage"] = "Your password has been updated.";
-        return RedirectToHomeForRole(member.Role);
+        return RedirectToPostLoginDestination(member);
     }
 
     [HttpPost]
@@ -233,17 +250,164 @@ public class AccountController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> RegistrationForm()
+    {
+        if (string.IsNullOrWhiteSpace(HttpContext.Session.GetString(SessionKeyUsername)))
+            return RedirectToAction(nameof(Login));
+
+        if (string.Equals(HttpContext.Session.GetString(SessionKeyMustChangePassword), "true", StringComparison.OrdinalIgnoreCase))
+            return RedirectToAction(nameof(ChangePassword));
+
+        var member = await GetCurrentSessionMemberAsync();
+        if (member == null)
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction(nameof(Login));
+        }
+
+        if (member.IsRegistrationFormSubmitted)
+            return RedirectToPostLoginDestination(member);
+
+        var vm = new MemberRegistrationFormViewModel
+        {
+            Name = member.Name,
+            MobileNo = member.MobileNo,
+            Terms = member.Terms,
+            EmailId = member.EmailId,
+            Address = member.Address,
+            DateOfBirth = member.DateOfBirth,
+            AadhaarNo = member.AadhaarNo,
+            Education = member.Education,
+            BusinessOrJob = member.BusinessOrJob,
+            TermsAcceptYN = member.TermsAcceptYN ?? false
+        };
+        ViewData["RegistrationTermsHtml"] = await GetRegistrationTermsHtmlAsync(member);
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RegistrationForm([Bind("EmailId,Address,DateOfBirth,AadhaarNo,Education,BusinessOrJob,TermsAcceptYN")] MemberRegistrationFormViewModel model)
+    {
+        if (string.IsNullOrWhiteSpace(HttpContext.Session.GetString(SessionKeyUsername)))
+            return RedirectToAction(nameof(Login));
+
+        if (string.Equals(HttpContext.Session.GetString(SessionKeyMustChangePassword), "true", StringComparison.OrdinalIgnoreCase))
+            return RedirectToAction(nameof(ChangePassword));
+
+        var memberIdStr = HttpContext.Session.GetString(SessionKeyMemberId);
+        if (!int.TryParse(memberIdStr, out var memberId))
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction(nameof(Login));
+        }
+
+        var member = await _db.Members.FirstOrDefaultAsync(m => m.Id == memberId);
+        if (member == null)
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction(nameof(Login));
+        }
+
+        if (!member.IsActive || member.RestrictLogin)
+        {
+            HttpContext.Session.Clear();
+            TempData["ErrorMessage"] = "Your session is no longer valid. Please contact an administrator.";
+            return RedirectToAction(nameof(Login));
+        }
+
+        model.Name = member.Name;
+        model.MobileNo = member.MobileNo;
+        model.Terms = member.Terms;
+        model.EmailId = model.EmailId?.Trim();
+        model.Address = model.Address?.Trim();
+        model.AadhaarNo = model.AadhaarNo?.Trim();
+        model.Education = model.Education?.Trim();
+        model.BusinessOrJob = model.BusinessOrJob?.Trim();
+        model.DateOfBirth = NormalizeToUtc(model.DateOfBirth);
+        TryValidateModel(model);
+
+        var termsHtml = await GetRegistrationTermsHtmlAsync(member);
+        if (string.IsNullOrWhiteSpace(termsHtml))
+            ModelState.AddModelError(nameof(model.Terms), "Terms are not available. Please contact administrator.");
+
+        if (!ModelState.IsValid)
+        {
+            ViewData["RegistrationTermsHtml"] = termsHtml;
+            return View(model);
+        }
+
+        member.EmailId = model.EmailId ?? string.Empty;
+        member.Address = model.Address ?? string.Empty;
+        member.DateOfBirth = model.DateOfBirth;
+        member.AadhaarNo = model.AadhaarNo;
+        member.Education = model.Education;
+        member.BusinessOrJob = model.BusinessOrJob;
+        member.TermsAcceptYN = model.TermsAcceptYN;
+        member.IsRegistrationFormSubmitted = true;
+
+        await _db.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Registration form submitted successfully.";
+        return RedirectToPostLoginDestination(member);
+    }
+
+    [HttpGet]
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
         return RedirectToAction(nameof(Login));
     }
 
-    private IActionResult RedirectToHomeForRole(string? role)
+    private IActionResult RedirectToPostLoginDestination(Member member)
     {
-        if (string.Equals(role, "Member", StringComparison.OrdinalIgnoreCase))
+        if (!member.IsRegistrationFormSubmitted)
+            return RedirectToAction(nameof(RegistrationForm));
+
+        if (string.Equals(member.Role, "Member", StringComparison.OrdinalIgnoreCase))
             return RedirectToAction("MyDashboard", "Home");
         return RedirectToAction("Index", "Home");
+    }
+
+    private async Task<Member?> GetCurrentSessionMemberAsync()
+    {
+        var idStr = HttpContext.Session.GetString(SessionKeyMemberId);
+        if (!int.TryParse(idStr, out var id))
+            return null;
+
+        return await _db.Members.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+    }
+
+    private async Task<string?> GetRegistrationTermsHtmlAsync(Member member)
+    {
+        var rulesHtml = await _db.RulesRegulations
+            .AsNoTracking()
+            .OrderByDescending(x => x.UpdatedAtUtc)
+            .Select(x => x.ContentHtml)
+            .FirstOrDefaultAsync();
+
+        if (!string.IsNullOrWhiteSpace(rulesHtml))
+            return rulesHtml;
+
+        if (!string.IsNullOrWhiteSpace(member.Terms))
+            return member.Terms;
+
+        return null;
+    }
+
+    private static DateTime? NormalizeToUtc(DateTime? value)
+    {
+        if (!value.HasValue)
+            return null;
+
+        var dt = value.Value;
+        return dt.Kind switch
+        {
+            DateTimeKind.Utc => dt,
+            DateTimeKind.Local => dt.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(dt, DateTimeKind.Utc)
+        };
     }
 
     private async Task<bool> MemberAllowsLoginAsync()

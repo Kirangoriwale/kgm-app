@@ -96,6 +96,9 @@ namespace KgmApp.Controllers
             if (memberId == null)
                 return RedirectToAction(nameof(Index));
 
+            if (!await IsCurrentMemberRegistrationSubmittedAsync(memberId.Value))
+                return RedirectToAction("RegistrationForm", "Account");
+
             var vm = await BuildMemberDashboardViewModelAsync(memberId.Value, memberName);
             ViewData["Title"] = "My dashboard";
             ViewData["PageTitle"] = "My Dashboard";
@@ -109,6 +112,9 @@ namespace KgmApp.Controllers
             var (memberId, memberName) = GetMemberFromSession();
             if (memberId == null)
                 return RedirectToAction(nameof(Index));
+
+            if (!await IsCurrentMemberRegistrationSubmittedAsync(memberId.Value))
+                return RedirectToAction("RegistrationForm", "Account");
 
             var vm = await _memberContribution.GetPaidDetailsAsync(memberId.Value, memberName);
             if (vm == null)
@@ -127,6 +133,9 @@ namespace KgmApp.Controllers
             if (memberId == null)
                 return RedirectToAction(nameof(Index));
 
+            if (!await IsCurrentMemberRegistrationSubmittedAsync(memberId.Value))
+                return RedirectToAction("RegistrationForm", "Account");
+
             var vm = await _memberContribution.GetPendingDetailsAsync(memberId.Value, memberName);
             if (vm == null)
                 return RedirectToAction(nameof(MemberDashboard));
@@ -143,6 +152,9 @@ namespace KgmApp.Controllers
             var (memberId, memberName) = GetMemberFromSession();
             if (memberId == null)
                 return RedirectToAction(nameof(Index));
+
+            if (!await IsCurrentMemberRegistrationSubmittedAsync(memberId.Value))
+                return RedirectToAction("RegistrationForm", "Account");
 
             var meetings = await _db.Meetings
                 .AsNoTracking()
@@ -196,6 +208,17 @@ namespace KgmApp.Controllers
                 return (null, string.Empty);
             var name = HttpContext.Session.GetString(AccountController.SessionKeyMemberName) ?? "Member";
             return (id, name);
+        }
+
+        private async Task<bool> IsCurrentMemberRegistrationSubmittedAsync(int memberId)
+        {
+            var member = await _db.Members
+                .AsNoTracking()
+                .Where(m => m.Id == memberId)
+                .Select(m => new { m.IsRegistrationFormSubmitted })
+                .FirstOrDefaultAsync();
+
+            return member?.IsRegistrationFormSubmitted ?? false;
         }
 
         private async Task<MemberDashboardViewModel> BuildMemberDashboardViewModelAsync(int memberId, string memberName)

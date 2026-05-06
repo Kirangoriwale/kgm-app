@@ -96,9 +96,10 @@ public class MemberController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Sr,Name,MobileNo,EmailId,Address,IsActive,IsRegistrationFormSubmitted,IsCommiteeMember,RestrictLogin,LoginPassword,IsFirstLogin,Role,Designation")] Member member)
+    public async Task<IActionResult> Create([Bind("Sr,Name,MobileNo,EmailId,Address,DateOfBirth,AadhaarNo,Education,BusinessOrJob,Terms,TermsAcceptYN,IsActive,IsRegistrationFormSubmitted,IsCommiteeMember,RestrictLogin,LoginPassword,IsFirstLogin,Role,Designation")] Member member)
     {
         member.MobileNo = member.MobileNo?.Trim() ?? string.Empty;
+        member.DateOfBirth = NormalizeToUtc(member.DateOfBirth);
         TryValidateModel(member);
 
         if (!IsValidRole(member.Role))
@@ -145,12 +146,13 @@ public class MemberController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Sr,Name,MobileNo,EmailId,Address,IsActive,IsRegistrationFormSubmitted,IsCommiteeMember,RestrictLogin,LoginPassword,IsFirstLogin,Role,Designation")] Member member)
+    public async Task<IActionResult> Edit(int id, [Bind("Id,Sr,Name,MobileNo,EmailId,Address,DateOfBirth,AadhaarNo,Education,BusinessOrJob,Terms,TermsAcceptYN,IsActive,IsRegistrationFormSubmitted,IsCommiteeMember,RestrictLogin,LoginPassword,IsFirstLogin,Role,Designation")] Member member)
     {
         if (id != member.Id)
             return NotFound();
 
         member.MobileNo = member.MobileNo?.Trim() ?? string.Empty;
+        member.DateOfBirth = NormalizeToUtc(member.DateOfBirth);
         TryValidateModel(member);
 
         if (!IsValidRole(member.Role))
@@ -726,5 +728,19 @@ public class MemberController : Controller
     private static string NormalizeRole(string role)
     {
         return AllowedRoles.FirstOrDefault(x => string.Equals(x, role, StringComparison.OrdinalIgnoreCase)) ?? role;
+    }
+
+    private static DateTime? NormalizeToUtc(DateTime? value)
+    {
+        if (!value.HasValue)
+            return null;
+
+        var dt = value.Value;
+        return dt.Kind switch
+        {
+            DateTimeKind.Utc => dt,
+            DateTimeKind.Local => dt.ToUniversalTime(),
+            _ => DateTime.SpecifyKind(dt, DateTimeKind.Utc)
+        };
     }
 }

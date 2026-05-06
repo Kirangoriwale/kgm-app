@@ -396,16 +396,16 @@ a.member-dashboard-amount-link:focus {
 }
 
 .committee-member-card {
-  background: linear-gradient(150deg, rgba(13, 110, 253, 0.12) 0%, #fff 52%, rgba(25, 135, 84, 0.12) 100%);
-  border: 1px solid rgba(13, 110, 253, 0.1) !important;
-  box-shadow: 0 0.35rem 1rem rgba(13, 110, 253, 0.08) !important;
+  background: linear-gradient(150deg, #eef3fb 0%, #e7edf8 55%, #e3ebf8 100%);
+  border: 1px solid rgba(33, 37, 41, 0.12) !important;
+  box-shadow: 0 0.35rem 1rem rgba(33, 37, 41, 0.12) !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .committee-member-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(13, 110, 253, 0.18) !important;
-  box-shadow: 0 0.8rem 1.5rem rgba(13, 110, 253, 0.14) !important;
+  border-color: rgba(33, 37, 41, 0.24) !important;
+  box-shadow: 0 0.8rem 1.5rem rgba(33, 37, 41, 0.18) !important;
 }
 
 .committee-member-card .card-body {
