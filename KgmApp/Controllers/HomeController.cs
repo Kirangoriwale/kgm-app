@@ -467,10 +467,7 @@ namespace KgmApp.Controllers
             ViewData["Title"] = "Committee Members";
             ViewData["PageTitle"] = "Committee Members";
             ViewData["BreadcrumbCurrent"] = "Committee Members";
-            var supabaseProjectUrl =
-                _configuration["Supabase:ProjectUrl"]
-                ?? _configuration["SUPABASE_URL"]
-                ?? Environment.GetEnvironmentVariable("SUPABASE_URL");
+            var supabaseProjectUrl = ResolveSupabaseProjectUrl();
             if (!string.IsNullOrWhiteSpace(supabaseProjectUrl))
             {
                 var photoBucket = _configuration["Supabase:MemberPhotosBucket"];
@@ -497,6 +494,45 @@ namespace KgmApp.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private string? ResolveSupabaseProjectUrl()
+        {
+            var configured =
+                _configuration["Supabase:ProjectUrl"]
+                ?? _configuration["SUPABASE_URL"]
+                ?? Environment.GetEnvironmentVariable("SUPABASE_URL");
+            if (!string.IsNullOrWhiteSpace(configured))
+                return configured;
+
+            // Fallback: derive Supabase project ref from DB username (e.g., postgres.<projectRef>).
+            var connection = _configuration.GetConnectionString("DefaultConnection")
+                ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+            if (string.IsNullOrWhiteSpace(connection))
+                return null;
+
+            if (!connection.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase)
+                && !connection.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+                return null;
+
+            try
+            {
+                var uri = new Uri(connection);
+                var userInfo = uri.UserInfo;
+                if (string.IsNullOrWhiteSpace(userInfo))
+                    return null;
+
+                var username = Uri.UnescapeDataString(userInfo.Split(':', 2)[0]);
+                var parts = username.Split('.', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length < 2 || string.IsNullOrWhiteSpace(parts[1]))
+                    return null;
+
+                return $"https://{parts[1]}.supabase.co";
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private const string DefaultAboutUsHtml = """

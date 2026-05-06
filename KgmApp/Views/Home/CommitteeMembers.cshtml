@@ -21,7 +21,8 @@ else
     <div class="row g-3">
         @foreach (var row in Model)
         {
-            var dialableMobileNo = new string((row.MobileNo ?? string.Empty).Where(char.IsDigit).ToArray());
+            var normalizedMobileNo = new string((row.MobileNo ?? string.Empty).Where(char.IsDigit).ToArray());
+            var dialableMobileNo = normalizedMobileNo.Length == 10 ? $"+91{normalizedMobileNo}" : normalizedMobileNo;
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="card border-0 shadow-sm rounded-3 h-100 committee-member-card">
                     <div class="card-body p-3 p-md-4">
@@ -41,7 +42,7 @@ else
                             <div class="committee-member-content min-w-0 d-flex flex-column">
                                 <h2 class="h5 mb-1 text-dark committee-member-name">@row.Name</h2>
                                 <div class="committee-member-designation">@row.Designation</div>
-                                <a class="committee-member-contact-link text-decoration-none fw-semibold d-inline-flex align-items-center gap-2 mt-2" href="tel:@dialableMobileNo">
+                                <a class="committee-member-contact-link text-decoration-none fw-semibold d-inline-flex align-items-center gap-2 mt-2" href="tel:@dialableMobileNo" data-dial-number="@dialableMobileNo">
                                     <i class="bi bi-telephone-fill small" aria-hidden="true"></i>
                                     <span>@row.MobileNo</span>
                                 </a>
@@ -122,6 +123,31 @@ else
                 };
 
                 loadNext();
+            });
+
+            // Some Android in-app browsers/webviews do not handle tel: directly.
+            // Add a fallback via Android intent URI for better dialer compatibility.
+            const dialLinks = document.querySelectorAll(".committee-member-contact-link[data-dial-number]");
+            dialLinks.forEach(function (link) {
+                link.addEventListener("click", function (event) {
+                    const dialNumber = link.getAttribute("data-dial-number");
+                    if (!dialNumber) return;
+
+                    const telUri = "tel:" + dialNumber;
+                    const isAndroid = /android/i.test(navigator.userAgent);
+                    if (!isAndroid) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    const intentNumber = dialNumber.replace(/^\+/, "");
+                    const intentUri = "intent://" + intentNumber + "#Intent;scheme=tel;action=android.intent.action.DIAL;end";
+
+                    window.location.href = telUri;
+                    window.setTimeout(function () {
+                        window.location.href = intentUri;
+                    }, 250);
+                });
             });
         })();
     </script>
