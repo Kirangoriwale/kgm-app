@@ -22,6 +22,43 @@
     <div class="alert alert-success" role="alert">@success</div>
 }
 
+<div class="card border-0 shadow-sm rounded-3 mb-3">
+    <div class="card-body">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+            <div>
+                <h5 class="card-title mb-1">Excel Import</h5>
+                <div class="small text-muted">
+                    File must have only 2 columns: <strong>MemberId</strong> and <strong>Present</strong> (True/False).
+                </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-outline-primary"
+                   asp-action="DownloadAttendanceImportTemplate"
+                   asp-route-meetingId="@Model.MeetingId">
+                    <i class="bi bi-download me-1"></i>Download Template
+                </a>
+
+                <form asp-action="ImportAttendanceExcel"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="d-flex flex-wrap gap-2 align-items-center">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="meetingId" value="@Model.MeetingId" />
+                    <input type="file"
+                           name="excelFile"
+                           class="form-control"
+                           style="max-width: 260px;"
+                           accept=".xlsx"
+                           required />
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-file-earmark-arrow-up me-1"></i>Import Excel
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <form asp-action="MarkAttendance" method="post" class="card border-0 shadow-sm rounded-3">
     <input type="hidden" name="MeetingId" value="@Model.MeetingId" />
     <div class="card-body p-0">

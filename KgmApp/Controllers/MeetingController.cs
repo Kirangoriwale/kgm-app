@@ -1,9 +1,13 @@
 using KgmApp.Data;
 using KgmApp.Models;
 using KgmApp.Models.Meetings;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Net.Sockets;
+using Npgsql;
 
 namespace KgmApp.Controllers;
 
@@ -271,6 +275,182 @@ public class MeetingController : Controller
         return RedirectToAction(nameof(MarkAttendance), new { id = meetingId });
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ImportAttendanceExcel(int meetingId, IFormFile? excelFile)
+    {
+        if (excelFile == null || excelFile.Length == 0)
+        {
+            TempData["LayoutError"] = "Please select an Excel file to import.";
+            return RedirectToAction(nameof(MarkAttendance), new { id = meetingId });
+        }
+
+        if (!string.Equals(Path.GetExtension(excelFile.FileName), ".xlsx", StringComparison.OrdinalIgnoreCase))
+        {
+            TempData["LayoutError"] = "Only .xlsx files are supported for import.";
+            return RedirectToAction(nameof(MarkAttendance), new { id = meetingId });
+        }
+
+        var meeting = await _db.Meetings.AsNoTracking().FirstOrDefaultAsync(m => m.Id == meetingId);
+        if (meeting == null)
+            return NotFound();
+
+        try
+        {
+            using var stream = excelFile.OpenReadStream();
+            using var workbook = new XLWorkbook(stream);
+            var worksheet = workbook.Worksheets.FirstOrDefault();
+            if (worksheet == null)
+            {
+                TempData["LayoutError"] = "The uploaded Excel file does not contain any worksheet.";
+                return RedirectToAction(nameof(MarkAttendance), new { id = meetingId });
+            }
+
+            if (!TryReadAttendanceHeaderMap(worksheet, out var headers))
+            {
+                TempData["LayoutError"] = "Invalid header row. Required columns: MemberId, Present.";
+                return RedirectToAction(nameof(MarkAttendance), new { id = meetingId });
+            }
+
+            var usedRange = worksheet.RangeUsed();
+            if (usedRange == null || usedRange.RowCount() <= 1)
+            {
+                TempData["LayoutError"] = "No attendance rows found in Excel file.";
+                return RedirectToAction(nameof(MarkAttendance), new { id = meetingId });
+            }
+
+            // Eligible members match the same rules as the MarkAttendance screen.
+            var eligibleMembersQuery = _db.Members
+                .AsNoTracking()
+                .Where(m => m.IsActive)
+                .AsQueryable();
+
+            if (string.Equals(meeting.Title, "Committee Meeting", StringComparison.OrdinalIgnoreCase))
+                eligibleMembersQuery = eligibleMembersQuery.Where(m => m.IsCommiteeMember);
+
+            var eligibleMemberIds = await eligibleMembersQuery.Select(m => m.Id).ToListAsync();
+            var eligible = eligibleMemberIds.ToHashSet();
+
+            var updates = new Dictionary<int, bool>();
+            var rowErrors = new List<string>();
+            var lastRow = usedRange.LastRow().RowNumber();
+
+            for (var rowIndex = 2; rowIndex <= lastRow; rowIndex++)
+            {
+                var row = worksheet.Row(rowIndex);
+                var memberIdRaw = GetCellValue(row, headers, "memberid");
+                var presentRaw = GetCellValue(row, headers, "present");
+
+                var isCompletelyBlank = string.IsNullOrWhiteSpace(memberIdRaw) && string.IsNullOrWhiteSpace(presentRaw);
+                if (isCompletelyBlank)
+                    continue;
+
+                if (!int.TryParse(memberIdRaw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var memberId) || memberId <= 0)
+                {
+                    rowErrors.Add($"Row {rowIndex}: invalid MemberId.");
+                    continue;
+                }
+
+                if (!eligible.Contains(memberId))
+                {
+                    rowErrors.Add($"Row {rowIndex}: MemberId {memberId} is not eligible for this meeting.");
+                    continue;
+                }
+
+                if (!TryParseBoolean(presentRaw, out var isPresent))
+                {
+                    rowErrors.Add($"Row {rowIndex}: invalid Present value (use True/False).");
+                    continue;
+                }
+
+                // If the file contains the same MemberId multiple times, last one wins.
+                updates[memberId] = isPresent;
+            }
+
+            if (updates.Count == 0)
+            {
+                TempData["LayoutError"] = "No valid attendance rows found to import.";
+                return RedirectToAction(nameof(MarkAttendance), new { id = meetingId });
+            }
+
+            var now = DateTime.UtcNow;
+            var existing = await _db.Attendances
+                .Where(a => a.MeetingId == meetingId && updates.Keys.Contains(a.MemberId))
+                .ToListAsync();
+            var existingByMember = existing.ToDictionary(a => a.MemberId, a => a);
+
+            var updatedCount = 0;
+            var insertedCount = 0;
+
+            foreach (var kvp in updates)
+            {
+                if (existingByMember.TryGetValue(kvp.Key, out var attendance))
+                {
+                    attendance.IsPresent = kvp.Value;
+                    attendance.MarkedAtUtc = now;
+                    updatedCount++;
+                }
+                else
+                {
+                    _db.Attendances.Add(new Attendance
+                    {
+                        MeetingId = meetingId,
+                        MemberId = kvp.Key,
+                        IsPresent = kvp.Value,
+                        MarkedAtUtc = now
+                    });
+                    insertedCount++;
+                }
+            }
+
+            await _db.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Excel import completed. Updated: {updatedCount}. Added: {insertedCount}.";
+            if (rowErrors.Count > 0)
+                TempData["LayoutError"] = string.Join(" ", rowErrors.Take(5)) + (rowErrors.Count > 5 ? " ..." : string.Empty);
+        }
+        catch (Exception ex) when (IsDatabaseConnectionFailure(ex))
+        {
+            TempData["LayoutError"] = "Database is currently unavailable. Import could not be completed.";
+        }
+        catch (Exception)
+        {
+            TempData["LayoutError"] = "Failed to import Excel file. Please verify the file format and try again.";
+        }
+
+        return RedirectToAction(nameof(MarkAttendance), new { id = meetingId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DownloadAttendanceImportTemplate(int meetingId)
+    {
+        var meetingExists = await _db.Meetings.AsNoTracking().AnyAsync(m => m.Id == meetingId);
+        if (!meetingExists)
+            return NotFound();
+
+        using var workbook = new XLWorkbook();
+        var ws = workbook.Worksheets.Add("Attendance");
+
+        ws.Cell(1, 1).Value = "MemberId";
+        ws.Cell(1, 2).Value = "Present";
+
+        ws.Cell(2, 1).Value = 1;
+        ws.Cell(2, 2).Value = "True";
+
+        var headerRange = ws.Range(1, 1, 1, 2);
+        headerRange.Style.Font.Bold = true;
+        headerRange.Style.Fill.BackgroundColor = XLColor.FromHtml("#e9f2ff");
+        ws.Columns(1, 2).AdjustToContents();
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        var content = stream.ToArray();
+        return File(
+            content,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"Meeting_{meetingId}_AttendanceImportTemplate.xlsx");
+    }
+
     private void PopulateMeetingTitleOptions()
     {
         ViewBag.MeetingTitles = AllowedMeetingTitles
@@ -282,6 +462,88 @@ public class MeetingController : Controller
     {
         return !string.IsNullOrWhiteSpace(title)
             && AllowedMeetingTitles.Contains(title, StringComparer.OrdinalIgnoreCase);
+    }
+
+    private static bool IsDatabaseConnectionFailure(Exception ex)
+    {
+        if (ex is NpgsqlException || ex is SocketException)
+            return true;
+
+        var current = ex.InnerException;
+        while (current != null)
+        {
+            if (current is NpgsqlException || current is SocketException)
+                return true;
+            current = current.InnerException;
+        }
+
+        return false;
+    }
+
+    private static bool TryReadAttendanceHeaderMap(IXLWorksheet worksheet, out Dictionary<string, int> headers)
+    {
+        headers = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var headerRow = worksheet.Row(1);
+        var lastCol = worksheet.LastColumnUsed()?.ColumnNumber() ?? 0;
+        if (lastCol == 0)
+            return false;
+
+        for (var col = 1; col <= lastCol; col++)
+        {
+            var raw = headerRow.Cell(col).GetValue<string>();
+            var key = NormalizeHeader(raw);
+            if (string.IsNullOrWhiteSpace(key))
+                continue;
+
+            headers[key] = col;
+        }
+
+        return headers.ContainsKey("memberid") && headers.ContainsKey("present");
+    }
+
+    private static string GetCellValue(IXLRow row, IReadOnlyDictionary<string, int> headers, string headerKey)
+    {
+        if (!headers.TryGetValue(headerKey, out var col))
+            return string.Empty;
+
+        return row.Cell(col).GetValue<string>().Trim();
+    }
+
+    private static string NormalizeHeader(string header)
+    {
+        if (string.IsNullOrWhiteSpace(header))
+            return string.Empty;
+
+        var chars = header.Where(char.IsLetterOrDigit).ToArray();
+        return new string(chars).ToLowerInvariant();
+    }
+
+    private static bool TryParseBoolean(string? raw, out bool value)
+    {
+        value = false;
+        if (string.IsNullOrWhiteSpace(raw))
+            return false;
+
+        var normalized = raw.Trim().ToLowerInvariant();
+        switch (normalized)
+        {
+            case "1":
+            case "y":
+            case "yes":
+            case "true":
+            case "t":
+                value = true;
+                return true;
+            case "0":
+            case "n":
+            case "no":
+            case "false":
+            case "f":
+                value = false;
+                return true;
+            default:
+                return false;
+        }
     }
 }
 

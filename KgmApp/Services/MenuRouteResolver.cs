@@ -44,6 +44,8 @@ public static class MenuRouteResolver
                 return new Resolved(MenuKeys.AboutUs, PermissionKind.View);
             if (string.Equals(a, "SaveAboutUs", StringComparison.OrdinalIgnoreCase))
                 return new Resolved(MenuKeys.AboutUs, PermissionKind.Edit);
+            if (string.Equals(a, "AboutDeveloper", StringComparison.OrdinalIgnoreCase))
+                return new Resolved(MenuKeys.AboutDeveloper, PermissionKind.View);
             if (string.Equals(a, "CommitteeMembers", StringComparison.OrdinalIgnoreCase))
                 return new Resolved(MenuKeys.CommitteeMembers, PermissionKind.View);
             if (string.Equals(a, "MyDashboard", StringComparison.OrdinalIgnoreCase) ||

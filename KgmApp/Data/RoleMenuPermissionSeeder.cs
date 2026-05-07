@@ -23,6 +23,7 @@ public static class RoleMenuPermissionSeeder
                 var isDashboard = menuKey == MenuKeys.HomeDashboard;
                 var isMyDashboard = menuKey == MenuKeys.MyDashboard;
                 var isAboutUs = menuKey == MenuKeys.AboutUs;
+                var isAboutDeveloper = menuKey == MenuKeys.AboutDeveloper;
                 var isCommitteeMembers = menuKey == MenuKeys.CommitteeMembers;
                 var isAnnouncements = menuKey == MenuKeys.Announcements;
                 var isSuggestions = menuKey == MenuKeys.Suggestions;
@@ -33,7 +34,7 @@ public static class RoleMenuPermissionSeeder
                 {
                     RoleName = role,
                     MenuKey = menuKey,
-                    CanView = isAdmin || isDashboard || isMyDashboard || isAboutUs || isCommitteeMembers || isAnnouncements || isSuggestions || isChangePassword || isRulesRegulations,
+                    CanView = isAdmin || isDashboard || isMyDashboard || isAboutUs || isAboutDeveloper || isCommitteeMembers || isAnnouncements || isSuggestions || isChangePassword || isRulesRegulations,
                     CanAdd = isAdmin || isSuggestions,
                     CanEdit = isAdmin,
                     CanDelete = isAdmin

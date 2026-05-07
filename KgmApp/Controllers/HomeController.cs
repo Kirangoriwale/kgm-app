@@ -379,6 +379,36 @@ namespace KgmApp.Controllers
             return View(row);
         }
 
+        [HttpGet]
+        public IActionResult AboutDeveloper()
+        {
+            ViewData["Title"] = "About Developer";
+            ViewData["PageTitle"] = "About Developer";
+            ViewData["BreadcrumbCurrent"] = "About Developer";
+
+            var supabaseProjectUrl = ResolveSupabaseProjectUrl();
+            if (!string.IsNullOrWhiteSpace(supabaseProjectUrl))
+            {
+                var photoBucket = _configuration["Supabase:MemberPhotosBucket"];
+                if (string.IsNullOrWhiteSpace(photoBucket))
+                {
+                    photoBucket = "member-photos";
+                }
+
+                var photoFolder = _configuration["Supabase:MemberPhotosFolder"]?.Trim().Trim('/');
+                var baseUrl = $"{supabaseProjectUrl.TrimEnd('/')}/storage/v1/object/public/{photoBucket}";
+                if (!string.IsNullOrWhiteSpace(photoFolder))
+                {
+                    baseUrl = $"{baseUrl}/{photoFolder}";
+                }
+
+                ViewData["AboutDeveloperPhotoBaseUrl"] = baseUrl;
+                ViewData["AboutDeveloperPhotoAltBaseUrl"] = $"{supabaseProjectUrl.TrimEnd('/')}/storage/files/buckets/{photoBucket}";
+            }
+
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveAboutUs([Bind("Id,ContentHtml")] AboutUsContent model)

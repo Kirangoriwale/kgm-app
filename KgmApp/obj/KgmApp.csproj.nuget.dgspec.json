@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\KgmApp.csproj": {}
+    "d:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\KgmApp.csproj": {}
   },
   "projects": {
-    "D:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\KgmApp.csproj": {
+    "d:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\KgmApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\KgmApp.csproj",
+        "projectUniqueName": "d:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\KgmApp.csproj",
         "projectName": "KgmApp",
-        "projectPath": "D:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\KgmApp.csproj",
+        "projectPath": "d:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\KgmApp.csproj",
         "packagesPath": "C:\\Users\\Kiran\\.nuget\\packages\\",
-        "outputPath": "D:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\obj\\",
+        "outputPath": "d:\\KIran_Project\\Bakup-Copy\\KgmApp\\KgmApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

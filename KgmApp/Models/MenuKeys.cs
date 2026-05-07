@@ -6,6 +6,7 @@ public static class MenuKeys
     public const string HomeDashboard = "Home_Dashboard";
     public const string MyDashboard = "Home_MyDashboard";
     public const string AboutUs = "Home_AboutUs";
+    public const string AboutDeveloper = "Home_AboutDeveloper";
     public const string CommitteeMembers = "Home_CommitteeMembers";
     public const string Members = "Members";
     public const string Transactions = "Transactions";
@@ -28,6 +29,7 @@ public static class MenuKeys
         HomeDashboard,
         MyDashboard,
         AboutUs,
+        AboutDeveloper,
         CommitteeMembers,
         Members,
         Transactions,

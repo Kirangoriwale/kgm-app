@@ -232,4 +232,14 @@
             </div>
         </li>
     }
+    @if (m.Can(MenuKeys.AboutDeveloper))
+    {
+        <li class="nav-item">
+            <a class="sidebar-link nav-link d-flex align-items-center rounded-3 @(cc == "Home" && ca == "AboutDeveloper" ? "active" : "")"
+               asp-controller="Home" asp-action="AboutDeveloper">
+                <i class="bi bi-person-badge sidebar-link-icon" aria-hidden="true"></i>
+                <span class="sidebar-label">About Developer</span>
+            </a>
+        </li>
+    }
 </ul>
